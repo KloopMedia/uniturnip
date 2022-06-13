@@ -8,7 +8,6 @@ class SelectWidget extends StatelessWidget {
   const SelectWidget({Key? key, required this.widgetData}) : super(key: key);
 
   final WidgetData widgetData;
-
   @override
   Widget build(BuildContext context) {
     String title = widgetData.schema['title'] ?? '';

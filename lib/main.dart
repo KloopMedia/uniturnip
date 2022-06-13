@@ -44,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     const Tab(icon: Icon(Icons.emoji_objects))
   ];
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   late TabController _tabController;
 
   late List<Map<String, dynamic>> _schemas;
@@ -134,71 +136,81 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
       body: Center(
         child: SingleChildScrollView(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            JSONSchemaUI(
-              schema: _schema,
-              ui: _ui,
-              onUpdate: _updateDataAndPath,
-              data: _data,
-              controller: formController,
-            ),
-            Text('Data: $_data \n Path: $_path'),
-            Padding(
-              padding: const EdgeInsets.all(10),
+          child: Form(
+              key: _formKey,
               child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(border: Border.all()),
-                    height: 500,
-                    child: TextFormField(
-                        // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_schema),
-                        controller: formControl,
-                        onChanged: (val) => _updateSchema(schema: json.decode(val)),
-                        decoration: const InputDecoration(labelText: 'SCHEMA'),
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null),
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  JSONSchemaUI(
+                    schema: _schema,
+                    ui: _ui,
+                    onUpdate: _updateDataAndPath,
+                    data: _data,
+                    controller: formController,
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(border: Border.all()),
-                        height: 500,
-                        child: TextFormField(
-                            // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_ui),
-                            controller: uiControl,
-                            onChanged: (val) => _updateUi(ui: json.decode(val)),
-                            decoration: const InputDecoration(labelText: 'UI'),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null),
-                      )),
-                      Expanded(
-                          child: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(border: Border.all()),
-                        height: 500,
-                        child: TextFormField(
-                            // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_data),
-                            controller: textControl,
-                            onChanged: (val) => formController.data = json.decode(val),
-                            decoration: const InputDecoration(labelText: 'DATA'),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null),
-                      )),
-                    ],
-                  )
+                  Text('Data: $_data \n Path: $_path'),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(border: Border.all()),
+                          height: 500,
+                          child: TextFormField(
+                            // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_schema),
+                              controller: formControl,
+                              onChanged: (val) => _updateSchema(schema: json.decode(val)),
+                              decoration: const InputDecoration(labelText: 'SCHEMA'),
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(border: Border.all()),
+                                  height: 500,
+                                  child: TextFormField(
+                                    // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_ui),
+                                      controller: uiControl,
+                                      onChanged: (val) => _updateUi(ui: json.decode(val)),
+                                      decoration: const InputDecoration(labelText: 'UI'),
+                                      keyboardType: TextInputType.multiline,
+                                      maxLines: null),
+                                )),
+                            Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(border: Border.all()),
+                                  height: 500,
+                                  child: TextFormField(
+                                    // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_data),
+                                      controller: textControl,
+                                      onChanged: (val) => formController.data = json.decode(val),
+                                      decoration: const InputDecoration(labelText: 'DATA'),
+                                      keyboardType: TextInputType.multiline,
+                                      maxLines: null),
+                                )),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                 ],
-              ),
-            ),
-          ],
-        )),
+              )
+          )
+          ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          if (!_formKey.currentState!.validate()) {
+            return;
+            // print("not valid");
+          }
+          _formKey.currentState!.save();
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
