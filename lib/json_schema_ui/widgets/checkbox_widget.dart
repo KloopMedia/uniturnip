@@ -14,32 +14,40 @@ class CheckboxWidget extends StatelessWidget {
     final _val = GlobalKey<FormState>();
 
     return FormField<bool>(
-      key: _val,
-      builder: (state) {
-        return Column(
-          children: [
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              controlAffinity: ListTileControlAffinity.leading,
-              autofocus: widgetData.autofocus,  //true
-              title: Text(title),
-              value: true == widgetData.value,
-              onChanged: (dynamic newValue) {
-                widgetData.onChange(context, widgetData.path, newValue);
-              },
-            ),
-            ElevatedButton(onPressed: () {
-              _val.currentState!.validate();
-            }, child: Text('drag')),
-          ],
-        );
-      },
-      validator: (value) {
-        if (!widgetData.value) {
+      validator: (_val){
+        if (widgetData.value == false) {
           return 'You need to accept terms';
-        } else {
-          return null;
         }
+      },
+      builder: (FormFieldState<dynamic> field) {
+        return FormField(
+          builder: (state) {
+            return CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                autofocus: widgetData.autofocus,    //true
+                value: true == widgetData.value,
+                onChanged: (dynamic newValue) {
+                  widgetData.onChange(context, widgetData.path, newValue);
+                },
+                title: Text(title),
+                subtitle: widgetData.value == false
+                    ? Builder(
+                  builder: (BuildContext context) =>  Text(
+                    'Required',
+                    style: TextStyle(color: Theme.of(context).errorColor),
+                  ),
+                ) : null
+            );
+          },
+          //   validator: (value){
+          //     if(widgetData.value == false){
+          //       return 'Required';
+          //     }else{
+          //       return null;
+          //     }
+          // },
+        );
       },
     );
   }

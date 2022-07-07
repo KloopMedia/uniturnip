@@ -25,7 +25,7 @@ class TextareaWidget extends StatelessWidget {
       child: TextFormField(
         validator: (val){
           if(val==null || val.isEmpty)
-            return 'Please enter appropriate text';
+            return 'Please enter appropriate Date';
           return null;
         },
         controller: textControl,

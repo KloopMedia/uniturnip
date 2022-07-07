@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
@@ -8,7 +9,6 @@ class TextWidget extends StatelessWidget {
   final WidgetData widgetData;
   final TextEditingController textControl = TextEditingController();
 
-  final _val = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -29,31 +29,18 @@ class TextWidget extends StatelessWidget {
           fieldViewBuilder: (BuildContext context,
               TextEditingController textEditingController,
               FocusNode focusNode, VoidCallback onFieldSubmitted) {
-            return Form(
-              key: _val,
-              child: Column(
-                  children: <Widget>[TextFormField(
-                    validator: (val) {
-                      if (val == null || val.isEmpty)
-                        return 'Please enter the text';
-                      return null;
-                    },
-                    controller: textEditingController,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder()),
-                    focusNode: focusNode,
-                    onChanged: (val) =>
-                        widgetData.onChange(context, widgetData.path, val),
-                    onFieldSubmitted: (String value) {
-                      onFieldSubmitted();
-                      print('You just typed a new entry  $value');
-                    },
-                  ),
-                    ElevatedButton(onPressed: () {
-                      _val.currentState!.validate();
-                    }, child: Text('Enter')),
-                  ]
+            return TextFormField(
+              validator: RequiredValidator(
+                errorText: 'Please enter a text',
               ),
+              controller: textEditingController,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              focusNode: focusNode,
+              onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
+              onFieldSubmitted: (String value) {
+                onFieldSubmitted();
+                print('You just typed a new entry  $value');
+              },
             );
           },
           optionsBuilder: (TextEditingValue textEditingValue) {
@@ -76,6 +63,9 @@ class TextWidget extends StatelessWidget {
       title: title,
       description: description,
       child: TextFormField(
+        validator: RequiredValidator(
+          errorText: 'Please enter a text',
+        ),
         controller: textControl,
         onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
         enabled: !widgetData.disabled,

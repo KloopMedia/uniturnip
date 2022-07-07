@@ -23,39 +23,27 @@ class _EmailWidgetState extends State<EmailWidget> {
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
-    final _val = GlobalKey<FormState>();
 
     return WidgetUI(
       title: title,
       description: description,
-      child: Form(
-        key: _val,
-        child: Column(
-          children: [
-            TextFormField(
-              validator: MultiValidator([
-                RequiredValidator(errorText: "Required"),
-                EmailValidator(errorText: "Please enter a valid email address"),
-              ]),
-              controller: textControl,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (val) => widget.widgetData.onChange(context, widget.widgetData.path, val),
-              enabled: !widget.widgetData.disabled,
-              autofocus: widget.widgetData.autofocus,
-              readOnly: widget.widgetData.readonly,
-              autofillHints: const [AutofillHints.email],
-            ),
-            ElevatedButton(onPressed: () {
-              _val.currentState!.validate();
-            }, child: const Text('submit')),
-          ],
+      child: TextFormField(
+        validator: MultiValidator([
+          RequiredValidator(errorText: "Required"),
+          EmailValidator(errorText: "Please enter a valid email address"),
+        ]),
+        controller: textControl,
+        decoration: const InputDecoration(
+          hintText: 'Email',
+          border: OutlineInputBorder(),
         ),
+        keyboardType: TextInputType.emailAddress,
+        onChanged: (val) => widget.widgetData.onChange(context, widget.widgetData.path, val),
+        enabled: !widget.widgetData.disabled,
+        autofocus: widget.widgetData.autofocus,
+        readOnly: widget.widgetData.readonly,
+        autofillHints: const [AutofillHints.email],
       ),
-
     );
   }
 }
