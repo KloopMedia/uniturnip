@@ -4,13 +4,14 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:uniturnip/json_schema_ui/examples/schemas.dart';
 import 'package:uniturnip/json_schema_ui/json_schema_ui.dart';
+import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 import 'package:uniturnip/main.dart';
 
-// int defaultPage = 4;
-// final _schemas = Schemas.schemas;
-// final _schema = Schemas.schemas[defaultPage]['schema'];
-// final _ui = Schemas.schemas[defaultPage]['ui'];
-// final _data = Schemas.schemas[defaultPage]['formData'];
+int defaultPage = 4;
+final _schemas = Schemas.schemas;
+final _schema = Schemas.schemas[defaultPage]['schema'];
+final _ui = Schemas.schemas[defaultPage]['ui'];
+final _data = Schemas.schemas[defaultPage]['formData'];
 
 void main() {
 
@@ -22,17 +23,30 @@ void main() {
       expect(find.byType(MaterialApp), findsOneWidget);
       expect(find.byType(MyHomePage), findsOneWidget);
       expect(find.text('Uniturnip'), findsOneWidget);
-      expect(find.byType(Scaffold), findsOneWidget);
-      expect(find.byType(TextFormField), findsNWidgets(14));
     });
+    testWidgets("Test 1", (WidgetTester tester) async {
+      await tester.pumpWidget(
+          MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [Form(child: JSONSchemaUI(
+                      schema: _schema,
+                      ui: _ui,
+                      onUpdate: null,
+                      data: _data,
+                    ))],
+                  ),
+                ),
+              )
+          )
+      );
 
-    // testWidgets('Renders list of post', (WidgetTester tester) async {
-    //   await tester.pumpWidget(MyApp);
-    //
-    //
-    // });
+      await tester.tap(find.text("Submit"), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(find.byType(ScaffoldMessenger), findsOneWidget);
 
-
+    });
 
   });
 }
