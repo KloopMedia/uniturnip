@@ -72,7 +72,9 @@ class JSONSchemaUI extends StatelessWidget {
                 if (hideSubmitButton) {
                   return const SizedBox.shrink();
                 }
-                return SizedBox(
+                return Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
@@ -80,10 +82,22 @@ class JSONSchemaUI extends StatelessWidget {
                         onSubmit!(data: context.read<UIModel>().data);
                       }
                     },
-                    child: const Text("Submit"),
+                    child: Text(
+                      "Submit",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    // style: ButtonStyle(
+                    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //         RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(18.0),
+                    //             side: BorderSide(
+                    //                 color: Theme.of(context)
+                    //                     .colorScheme
+                    //                     .copyWith()
+                    //                     .primary)))),
                   ),
                 );
-              }),
+              })
             ],
           ),
         ),
