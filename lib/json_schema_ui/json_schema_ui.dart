@@ -58,6 +58,8 @@ class JSONSchemaUI extends StatelessWidget {
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.end,
             children: [
               JSONSchemaUIField(
                 schema: schema,
@@ -70,13 +72,16 @@ class JSONSchemaUI extends StatelessWidget {
                 if (hideSubmitButton) {
                   return const SizedBox.shrink();
                 }
-                return ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      onSubmit!(data: context.read<UIModel>().data);
-                    }
-                  },
-                  child: const Text("Submit"),
+                return SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        onSubmit!(data: context.read<UIModel>().data);
+                      }
+                    },
+                    child: const Text("Submit"),
+                  ),
                 );
               }),
             ],
