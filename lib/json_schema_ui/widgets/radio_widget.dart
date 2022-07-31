@@ -59,9 +59,6 @@ class RadioWidget extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               onChanged: widgetData.disabled ? null : _onChange,
             ),
-          if (widgetData.required && widgetData.value == null)
-            Text('Required',
-                style: TextStyle(color: Theme.of(context).errorColor)),
         ],
       ),
     );
