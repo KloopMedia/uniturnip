@@ -115,10 +115,11 @@ class UIModel extends ChangeNotifier {
         children: wordsAsTextSpan
             .map((e) => TextSpan(
                 text: e.text,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall,
+                // TextStyle(
+                //   fontSize: 20.0,
+                //   color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,
+                // ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     _clickedWord = e.text!;

@@ -73,8 +73,8 @@ class ObjectHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != null) Text(title!, style: Theme.of(context).textTheme.titleLarge),
-          if (description != null) Text(description!, style: Theme.of(context).textTheme.titleMedium),
+          if (title != null) Text(title!, style: Theme.of(context).textTheme.headlineMedium),
+          if (description != null) Text(description!, style: Theme.of(context).textTheme.headlineSmall),
           const Divider(height: 10),
         ],
       ),
