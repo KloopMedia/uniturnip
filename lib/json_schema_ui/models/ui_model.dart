@@ -16,12 +16,16 @@ class UIModel extends ChangeNotifier {
 
   bool get isExternal => _isExternal;
 
+  // late WidgetData widgetData;
+
   set data(Map<String, dynamic> value) {
     _data = value;
     _isExternal = true;
     notifyListeners();
     // onUpdate!(path: MapPath(), data: _data);
   }
+
+
 
   void Function({required MapPath path, required Map<String, dynamic> data})?
       onUpdate;
@@ -91,8 +95,13 @@ class UIModel extends ChangeNotifier {
   List<String> _translationList = [];
   List<String> get translationList => _translationList;
 
-  void setData(List<Map<String, dynamic>> value) {
-    _dataValue = value;
+  void setData(WidgetData widgetData, List<Map<String, dynamic>> value) {
+    if (widgetData.disabled == true) {
+
+    } else {
+      _dataValue = value;
+    }
+
   }
 
   void getSentenceAsList() {

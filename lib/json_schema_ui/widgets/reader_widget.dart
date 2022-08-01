@@ -10,7 +10,7 @@ class ReaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UIModel>().setData(widgetData.value);
+    context.read<UIModel>().setData(widgetData, widgetData.value);
     context.read<UIModel>().getSentenceAsList();
     context.read<UIModel>().getTextSpan(widgetData, context);
     var sentenceAsTextSpan = context.watch<UIModel>().sentenceAsTextSpan;
