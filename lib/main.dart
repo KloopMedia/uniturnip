@@ -159,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 data: _data,
                 // disabled: disabled,
                 saveAudioRecord: saveAudioRecord,
+                saveFile: saveFile,
                 onSubmit: ({required Map<String, dynamic> data}) {
                   print(data);
                 },
@@ -231,9 +232,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return filepath;
   }
 
-  Future<String> saveFile(String filepath) async {
+  Future<String> saveFile(List<String?> filepath, {bool private = false}) async {
     print('FUTURE SAVE FILE');
-    return filepath;
+    print(filepath);
+    return filepath[0]!;
   }
 
   void _updateDataAndPath({required Map<String, dynamic> data, required MapPath path}) {

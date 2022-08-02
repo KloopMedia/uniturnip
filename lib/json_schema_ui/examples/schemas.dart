@@ -101,8 +101,7 @@ class Schemas {
     },
     "ui": {
       "firstName": {
-        "ui:widget": "audio",
-        "ui:options": {"private": false, "default": ""}
+        "ui:widget": "customfile",
       },
       "lastName": {"ui:emptyValue": "", "ui:autocomplete": "given-name"},
       "age": {
