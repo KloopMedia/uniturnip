@@ -46,7 +46,12 @@ class JSONSchemaUIField extends StatelessWidget {
         for (String field in fields)
           ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
         if (path.isLastArray()) ArrayPanel(path),
-      ],
+      ].map((e) => Padding(
+          padding: const EdgeInsets.all(3),
+          child: e,
+        ),
+      )
+          .toList(),
     );
   }
 }
@@ -68,8 +73,8 @@ class ObjectHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != null) Text(title!, style: Theme.of(context).textTheme.headline6),
-          if (description != null) Text(description!),
+          if (title != null) Text(title!, style: Theme.of(context).textTheme.headlineMedium),
+          if (description != null) Text(description!, style: Theme.of(context).textTheme.headlineSmall),
           const Divider(height: 10),
         ],
       ),

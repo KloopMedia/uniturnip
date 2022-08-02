@@ -26,6 +26,7 @@ class JSONSchemaUI extends StatelessWidget {
   final SaveAudioRecordCallback? saveAudioRecord;
   final FileCallback? saveFile;
   final UIModel _formController;
+  final bool hideSubmitButton;
 
   JSONSchemaUI({
     Key? key,
@@ -62,6 +63,8 @@ class JSONSchemaUI extends StatelessWidget {
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.end,
             children: [
               JSONSchemaUIField(
                 schema: schema,
@@ -71,15 +74,35 @@ class JSONSchemaUI extends StatelessWidget {
 
               // Button that submit the whole form using global key
               Builder(builder: (context) {
-                return ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      onSubmit!(data: context.read<UIModel>().data);
-                    }
-                  },
-                  child: const Text("Submit"),
+                if (hideSubmitButton) {
+                  return const SizedBox.shrink();
+                }
+                return Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        onSubmit!(data: context.read<UIModel>().data);
+                      }
+                    },
+                    child: Text(
+                      "Submit",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    // style: ButtonStyle(
+                    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //         RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(18.0),
+                    //             side: BorderSide(
+                    //                 color: Theme.of(context)
+                    //                     .colorScheme
+                    //                     .copyWith()
+                    //                     .primary)))),
+                  ),
                 );
-              }),
+              })
             ],
           ),
         ),
