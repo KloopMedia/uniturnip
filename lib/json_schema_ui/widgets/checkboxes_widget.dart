@@ -1,50 +1,39 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 
-import '../models/widget_data.dart';
-
-// TODO: Implement CheckboxesWidget
-class CheckboxesWidget extends StatefulWidget {
-  const CheckboxesWidget({Key? key, required this.widgetData}) : super(key: key);
-
+class CheckboxesWidget extends StatelessWidget {
   final WidgetData widgetData;
 
-  @override
-  State<CheckboxesWidget> createState() => _CheckboxesWidgetState();
-}
+  const CheckboxesWidget({Key? key, required this.widgetData}) : super(key: key);
 
-class _CheckboxesWidgetState extends State<CheckboxesWidget> {
-  List values =  [];
-  
+  void _onChange(bool? value) {
+    widgetData.onChange(widgetData.path, value);
+  }
+
   @override
   Widget build(BuildContext context) {
-    List items = widget.widgetData.schema['enum'] ?? [];
-    List value = widget.widgetData.value ?? [];
+    List items = widgetData.schema['enum'] ?? [];
+    List? value = widgetData.value;
 
-    return Column(
-      children: [
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: items.length,
-          itemBuilder: (BuildContext context, int index) => CheckboxListTile(
-            controlAffinity: ListTileControlAffinity.leading,
-            autofocus: widget.widgetData.autofocus,
-            title: Text(items[index]),
-            value: value.contains(items[index]),
-            onChanged: (dynamic newValue) {
-              setState(() {
-                newValue ? values.add(items[index]) : values.removeWhere((element) => element == items[index]);
-              });
-              widget.widgetData.onChange(context, widget.widgetData.path, values);
-            },
-          ),
-        ),
-        value.contains(items) ==  null ? Text(
-          'Required',
-          style: TextStyle(
-              color: Theme.of(context).errorColor
-          ),
-        ) : SizedBox.shrink(),
-      ],
+    return WidgetUI(
+      title: widgetData.title,
+      description: widgetData.description,
+      required: widgetData.required,
+      child: Column(
+        children: [
+          for (var item in items)
+            CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              autofocus: widgetData.autofocus,
+              title: Text(item),
+              value: value?.contains(item),
+              onChanged: widgetData.disabled ? null : _onChange,
+            ),
+          if (widgetData.required && value == null)
+            Text('Required', style: TextStyle(color: Theme.of(context).errorColor)),
+        ],
+      ),
     );
   }
 }
