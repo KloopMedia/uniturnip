@@ -20,133 +20,115 @@ class RichTextEditor extends StatefulWidget {
 class RichTextEditorState extends State<RichTextEditor> {
   final HtmlEditorController controller = HtmlEditorController();
   bool isPreview = false;
-  var htmlText;
-  var modifiedHtmlText;
-  var defaultHtmlText;
-  bool readonly = true;
-  bool disabled = true;
+  late String? modifiedHtmlText;
+  late final String defaultHtmlText;
+  late final bool readonly;
+  late final bool disabled;
 
   @override
   void initState() {
     readonly = widget.widgetData.readonly;
     disabled = widget.widgetData.disabled;
-    defaultHtmlText = widget.widgetData.schema['default'];
-    isPreview = readonly == true && disabled == true ? true : false;
+    defaultHtmlText = widget.widgetData.value ?? widget.widgetData.schema['default'] ?? '';
+    isPreview = readonly || disabled;
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
 
-    if (htmlText.toString().length > 6 &&
-        htmlText.toString().startsWith('<br>', 3)) {
-      modifiedHtmlText = htmlText.toString().substring(11);
+    if (isPreview) {
+      return Column(children: [
+        Html(data: modifiedHtmlText ?? defaultHtmlText),
+        !(readonly || disabled)
+            ? TextButton(
+                style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary),
+                onPressed: () {
+                  setState(() => isPreview = false);
+                },
+                child: const Text('Edit rich text',
+                    style: TextStyle(color: Colors.white)),
+              )
+            : const SizedBox.shrink()
+      ]);
     } else {
-      modifiedHtmlText = htmlText;
-    }
-
-    if (readonly == true && disabled == true) widget.widgetData.onChange(context, widget.widgetData.path, defaultHtmlText);
-
-    return isPreview == true
-        ? Column(
-            children: [
-              Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                      child: Html(data: modifiedHtmlText ?? defaultHtmlText ?? ''))
+      return GestureDetector(
+        onTap: () {
+          if (!kIsWeb) {
+            controller.clearFocus();
+          }
+        },
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              HtmlEditor(
+                controller: controller,
+                htmlEditorOptions: const HtmlEditorOptions(
+                  autoAdjustHeight: false,
+                  hint: 'Your text here...',
+                  shouldEnsureVisible: true,
+                ),
+                htmlToolbarOptions: HtmlToolbarOptions(
+                  toolbarPosition: ToolbarPosition.aboveEditor,
+                  toolbarType: ToolbarType.nativeScrollable,
+                  toolbarItemHeight: 50.0,
+                  gridViewVerticalSpacing: 3,
+                  gridViewHorizontalSpacing: 3,
+                  renderBorder: true,
+                  renderSeparatorWidget: false,
+                  dropdownMenuMaxHeight: 600.0,
+                  defaultToolbarButtons: const [
+                    StyleButtons(),
+                    FontSettingButtons(fontSizeUnit: false),
+                    FontButtons(),
+                    ColorButtons(),
+                    ParagraphButtons(
+                      caseConverter: false,
+                      textDirection: false,
+                      increaseIndent: false,
+                      decreaseIndent: false,
+                    ),
+                    ListButtons(),
+                  ],
+                  customToolbarButtons: [
+                    UndoRedoButtons(controller: controller)
+                  ],
+                ),
+                callbacks: Callbacks(onInit: () {
+                  if (modifiedHtmlText != null) {
+                    if (modifiedHtmlText!.length > 6) {
+                      controller.insertHtml(modifiedHtmlText!);
+                    } else {
+                      controller.insertHtml(defaultHtmlText);
+                    }
+                  }
+                }, onChangeContent: (String? changed) {
+                  setState(() {
+                    if (changed.toString().length > 6 && changed.toString().startsWith('<br>', 3)) {
+                      modifiedHtmlText = changed.toString().substring(11);
+                    } else {
+                      modifiedHtmlText = changed;
+                    }
+                  });
+                }),
+                otherOptions: const OtherOptions(height: 550),
               ),
-              readonly == false && disabled == false
-                  ? TextButton(
-                      style: TextButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+              Center(
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
                       onPressed: () {
-                        setState(() => isPreview = false);
+                        setState(() => isPreview = true);
+                        widget.widgetData
+                            .onChange(widget.widgetData.path, modifiedHtmlText);
                       },
-                      child: const Text('Edit rich text', style: TextStyle(color: Colors.white)),
-                  )
-                  : Container()
-            ]
-          )
-        : GestureDetector(
-            onTap: () {
-              if (!kIsWeb) {
-                controller.clearFocus();
-              }
-            },
-            child: SingleChildScrollView(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SingleChildScrollView(
-                      // child: Text("DDDD")
-                      child: HtmlEditor(
-                        controller: controller,
-                        htmlEditorOptions: const HtmlEditorOptions(
-                          autoAdjustHeight: false,
-                          hint: 'Your text here...',
-                          shouldEnsureVisible: true,
-                        ),
-                        htmlToolbarOptions: HtmlToolbarOptions(
-                          toolbarPosition: ToolbarPosition.aboveEditor,
-                          toolbarType: ToolbarType.nativeScrollable,
-                          toolbarItemHeight: 50.0,
-                          gridViewVerticalSpacing: 3,
-                          gridViewHorizontalSpacing: 3,
-                          renderBorder: true,
-                          renderSeparatorWidget: false,
-                          dropdownMenuMaxHeight: 600.0,
-                          defaultToolbarButtons: const [
-                            StyleButtons(),
-                            FontSettingButtons(fontSizeUnit: false),
-                            FontButtons(),
-                            ColorButtons(),
-                            ParagraphButtons(
-                              caseConverter: false,
-                              textDirection: false,
-                              increaseIndent: false,
-                              decreaseIndent: false,
-                            ),
-                            ListButtons(),
-                          ],
-                          customToolbarButtons: [
-                            UndoRedoButtons(controller: controller)
-                          ],
-                          onButtonPressed: (ButtonType type, bool? status,
-                              Function? updateStatus) {
-                            return true;
-                          },
-                          onDropdownChanged: (DropdownType type,
-                              dynamic changed,
-                              Function(dynamic)? updateSelectedItem) {
-                            return true;
-                          },
-                        ),
-                        callbacks: Callbacks(onInit: () {
-                          if (modifiedHtmlText.toString().length > 6) {
-                            controller.insertHtml(modifiedHtmlText);
-                          } else {
-                            controller.insertHtml(defaultHtmlText);
-                          }
-                        }, onChangeContent: (String? changed) {
-                          setState(() => htmlText = changed);
-                        }),
-                        otherOptions: const OtherOptions(height: 550),
-                      ),
-                    ),
-                    Center(
-                        child: TextButton(
-                            style: TextButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
-                            onPressed: () {
-                              setState(() => isPreview = true);
-                              widget.widgetData.onChange(context, widget.widgetData.path, modifiedHtmlText);
-                            },
-                            child: const Text('Preview rich text', style: TextStyle(color: Colors.white)))
-                    ),
-                  ]
-              ),
-            ),
-          );
+                      child: const Text('Preview rich text',
+                          style: TextStyle(color: Colors.white)))),
+            ]),
+      );
+    }
   }
 }
 

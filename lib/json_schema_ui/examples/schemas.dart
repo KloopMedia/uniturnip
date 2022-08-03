@@ -199,7 +199,8 @@ class Schemas {
       "lastName": "Norris",
       "age": 75,
       "bio": "Roundhouse kicking asses since 1940",
-      "password": "noneed"
+      "password": "noneed",
+      "rich_text": ""
     }
   };
   static Map<String, dynamic> nested = {

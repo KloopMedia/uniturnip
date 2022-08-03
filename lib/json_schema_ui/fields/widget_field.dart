@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 import 'package:uniturnip/json_schema_ui/widgets.dart';
+import 'package:uniturnip/json_schema_ui/widgets/rich_text_editor.dart';
 
 class WidgetField extends StatelessWidget {
   final String widgetType;
@@ -59,6 +60,8 @@ class WidgetField extends StatelessWidget {
         return NullWidget(widgetData: widgetData);
       case 'reader':
         return ReaderWidget(widgetData: widgetData);
+      case 'editor':
+        return RichTextEditor(widgetData: widgetData);
       // case 'card':
       // return CardWidget(widgetData: widgetData);
       default:
