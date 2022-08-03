@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uniturnip/json_schema_ui/widgets/rich_text_editor.dart';
 import 'fields/json_schema_dependency.dart';
 import 'fields/json_schema_field.dart';
 import 'fields/json_schema_leaf.dart';
@@ -55,6 +56,8 @@ class Utils {
         return NullWidget(widgetData: widgetData);
       case 'reader':
         return ReaderWidget(widgetData: widgetData);
+      case 'editor':
+        return RichTextEditor(widgetData: widgetData);
       // case 'card':
         // return CardWidget(widgetData: widgetData);
       default:
@@ -250,7 +253,7 @@ class Utils {
     Map<String, dynamic> newSchema = schema['properties']?[field] ?? schema['items'] ?? {};
     Map<String, dynamic> newUiSchema = ui[field] ?? ui['items'] ?? {};
     String schemaType = newSchema['type'] ?? 'not_defined';
-    if (schemaType == 'array' || ui['ui:widget'] == "reader") {  ///
+    if (schemaType == 'array' || ui['ui:widget'] == "reader" || ui['ui:widget'] == "editor") {  ///
       return JSONSchemaFinalLeaf(
         schema: newSchema,
         ui: newUiSchema,

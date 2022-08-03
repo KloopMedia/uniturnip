@@ -165,12 +165,21 @@ class Schemas {
       "type": "object",
       "required": ["firstName", "lastName"],
       "properties": {
+        "richText": {
+          "type": "string",
+          "default": "<p>Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.Flutter HTML Editor Enhanced is a text editor for Android, iOS, and Web to help write WYSIWYG HTML code with the Summernote JavaScript wrapper.</p>"
+        },
         "firstName": {"type": "string", "title": "First name", "default": "Chuck"},
         "lastName": {"type": "string", "title": "Last name"},
         "telephone": {"type": "string", "title": "Telephone", "minLength": 10}
       }
     },
     "ui": {
+      "richText": {
+        "ui:widget": "editor",
+        "ui:disabled": false,
+        "ui:readonly": false
+      },
       "firstName": {"ui:autofocus": true, "ui:emptyValue": "", "ui:autocomplete": "family-name"},
       "lastName": {"ui:emptyValue": "", "ui:autocomplete": "given-name"},
       "age": {

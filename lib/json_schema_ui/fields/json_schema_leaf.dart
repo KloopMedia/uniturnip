@@ -29,6 +29,8 @@ class JSONSchemaFinalLeaf extends JSONSchemaUIField {
       path: path,
       uiSchema: ui,
       onChange: onUpdate,
+      readonly: ui['ui:readonly'] ?? false,
+      disabled: ui['ui:disabled'] ?? false
     );
     
     Widget formWidget = Utils.formWidget(widgetData);
