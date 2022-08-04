@@ -19,8 +19,8 @@ class RichTextEditor extends StatefulWidget {
 
 class RichTextEditorState extends State<RichTextEditor> {
   final HtmlEditorController controller = HtmlEditorController();
-  bool isPreview = false;
-  late String? modifiedHtmlText;
+  late bool isPreview;
+  String? modifiedHtmlText;
   late final String defaultHtmlText;
   late final bool readonly;
   late final bool disabled;
@@ -99,16 +99,18 @@ class RichTextEditorState extends State<RichTextEditor> {
                   if (modifiedHtmlText != null) {
                     if (modifiedHtmlText!.length > 6) {
                       controller.insertHtml(modifiedHtmlText!);
-                    } else {
-                      controller.insertHtml(defaultHtmlText);
                     }
+                  } else {
+                    controller.insertHtml(defaultHtmlText);
                   }
                 }, onChangeContent: (String? changed) {
                   setState(() {
-                    if (changed.toString().length > 6 && changed.toString().startsWith('<br>', 3)) {
-                      modifiedHtmlText = changed.toString().substring(11);
-                    } else {
-                      modifiedHtmlText = changed;
+                    if (changed != null) {
+                      if (changed.length > 6 && changed.startsWith('<br>', 3)) {
+                        modifiedHtmlText = changed.substring(11);
+                      } else {
+                        modifiedHtmlText = changed;
+                      }
                     }
                   });
                 }),
@@ -120,9 +122,8 @@ class RichTextEditorState extends State<RichTextEditor> {
                           backgroundColor:
                               Theme.of(context).colorScheme.primary),
                       onPressed: () {
+                        widget.widgetData.onChange(widget.widgetData.path, modifiedHtmlText);
                         setState(() => isPreview = true);
-                        widget.widgetData
-                            .onChange(widget.widgetData.path, modifiedHtmlText);
                       },
                       child: const Text('Preview rich text',
                           style: TextStyle(color: Colors.white)))),

@@ -37,7 +37,8 @@ class JSONSchemaFinalLeaf extends JSONSchemaUIField {
           value: data,
           path: path,
           uiSchema: ui,
-          disabled: uiModel.disabled,
+          disabled: ui['ui:disabled'] ?? uiModel.disabled,
+          readonly: ui['ui:readonly'] ?? false,
           required: required,
           onChange: (path, value) {
             uiModel.modifyData(path, value);
