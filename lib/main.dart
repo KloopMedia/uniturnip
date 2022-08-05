@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
-    int defaultPage = 4;
+    int defaultPage = 0;
     _tabController.addListener(_handleTabSelection);
     _schemas = Schemas.schemas;
     _schema = Schemas.schemas[defaultPage]['schema'];

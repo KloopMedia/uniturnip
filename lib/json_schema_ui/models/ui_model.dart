@@ -174,25 +174,4 @@ class UIModel extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  /// -------------- for CardWidget --------------
-
-  int _counter = 0;
-
-  int get counter => _counter;
-
-  int _length = 0;
-
-  int get length => _length;
-
-  void initValues(Map schema) {
-    List fields = schema['properties'].keys.toList();
-    _length = fields.length;
-  }
-
-  getField() {
-    _counter++;
-    if (counter == length) _counter = 0;
-    notifyListeners();
-  }
 }

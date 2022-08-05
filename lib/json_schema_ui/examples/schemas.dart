@@ -1475,6 +1475,7 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
+    test,
     simple,
     nested,
     arrays,
