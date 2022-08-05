@@ -1,29 +1,129 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../models/ui_model.dart';
 import '../models/widget_data.dart';
 
-class ReaderWidget extends StatelessWidget {
+class ReaderWidget extends StatefulWidget {
   const ReaderWidget({Key? key, required this.widgetData}) : super(key: key);
 
   final WidgetData widgetData;
 
   @override
+  State<ReaderWidget> createState() => _ReaderWidgetState();
+}
+
+class _ReaderWidgetState extends State<ReaderWidget> {
+  String _clickedWord = '';
+  String get clickedWord => _clickedWord;
+
+  String _translation = '';
+  String get translation => _translation;
+
+  final List<String> _words = [];
+  List<String> get words => _words;
+
+  List<Map<String, dynamic>> _formData = [];
+  List<Map<String, dynamic>> get formData => _formData;
+
+  int _index = 0;
+  int get index => _index;
+
+  final List<String> _clickedWords = [];
+  List<String> get clickedWords => _clickedWords;
+
+  final List<String> _translations = [];
+  List<String> get translations => _translations;
+
+  List<Map<String, dynamic>> _formDataAsList = [];
+  List<Map<String, dynamic>> get formDataAsList => _formDataAsList;
+
+  final List<TextSpan> _wordsAsTextSpan = [];
+  List<TextSpan> get wordsAsTextSpan => _wordsAsTextSpan;
+
+  @override
+  void initState() {
+    /// получаем в виде списка данные текста из formData
+    _formData = widget.widgetData.value;
+
+    /// получаем список всех слов текста (words)
+    words.clear();
+    for (var map in formData) {
+      _words.add(map['word']);
+    }
+
+    /// все слова из списка words оборачиваем виджетом TextSpan
+    for (int index = 0; index < words.length; index++) {
+      _wordsAsTextSpan.add(TextSpan(text: words[index] + ' '));
+    }
+    super.initState();
+  }
+
+  setOnTapChanges(String word) {
+    _clickedWord = word;
+    getTranslate();
+    increaseCount();
+    getClickedWords();
+  }
+
+  void hideClickedWord() {
+    setState(() => _clickedWord = '');
+  }
+
+  void getTranslate() {
+    /// убираем лишний пробел в конце слова
+    var wordWithoutSpace = clickedWord.substring(0, clickedWord.length - 1);
+
+    /// находим под каким индексом находится нажатое слово в списке всех слов
+    _index = words.indexOf(wordWithoutSpace);
+
+    /// получаем перевод нажатого слова
+    _translation = formData[index]['translation'];
+  }
+
+  void increaseCount() {
+    Map<String, dynamic> clickedWordProperties;
+
+    /// из formData получаем данные текста с измененными значениями свойств
+    _formData = widget.widgetData.value;
+    _formDataAsList = List.from(formData);
+
+    /// по индексу получаем свойства нажатого слова
+    clickedWordProperties = {...formData[index]};
+
+    /// при каждом нажатии на слово, свойство count этого слова увеличивается на один
+    clickedWordProperties['count'] = clickedWordProperties['count'] + 1;
+
+    /// если слово нажато один раз, то свойство active становится true
+    if (clickedWordProperties['count'] == 1) {
+      clickedWordProperties['active'] = true;
+    }
+
+    /// заменяем в схеме изменившиеся свойства
+    _formDataAsList.removeAt(index);
+    _formDataAsList.insert(index, clickedWordProperties);
+    widget.widgetData.onChange(widget.widgetData.path, formDataAsList);
+  }
+
+  /// добавляем нажатые слова по очереди в список для отображения в UI
+  void getClickedWords() {
+    if (!clickedWords.contains(clickedWord) &&
+        !translations.contains(translation)) {
+      _clickedWords.add(clickedWord);
+      _translations.add(translation);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<UIModel>().setData(widgetData.value);
-    context.read<UIModel>().getSentenceAsList();
-    context.read<UIModel>().getTextSpan(widgetData, context);
-    var sentenceAsTextSpan = context.watch<UIModel>().sentenceAsTextSpan;
-    var clickedWord = context.watch<UIModel>().clickedWord;
-    var translation = context.watch<UIModel>().translation;
-    var clickedWordList = context.watch<UIModel>().clickedWordList;
-    var translationList = context.watch<UIModel>().translationList;
 
     return Column(
       children: [
         Container(
             padding: const EdgeInsets.all(16.0),
-            child: RichText(text: sentenceAsTextSpan)),
+            child: ExtractedTextSpan(
+                wordsAsTextSpan: wordsAsTextSpan,
+                clickedWord: clickedWord,
+                onPressed: (word) => setOnTapChanges(word))
+        ),
         Container(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -37,8 +137,7 @@ class ReaderWidget extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        //context.read<UIModel>().updateText(false);
-                        //context.read<UIModel>().getTextSpan(widgetData, context);
+                        // TODO: Add the method to get the previous sentence
                       })),
               Container(
                   color: Colors.grey,
@@ -48,14 +147,12 @@ class ReaderWidget extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        //context.read<UIModel>().updateText(true);
-                        // context.read<UIModel>().getTextSpan(widgetData, context);
+                        // TODO: Add the method to get the next sentence
                       })),
-            ],
-          ),
+            ]),
         ),
         clickedWord.isEmpty
-            ? Container()
+            ? const SizedBox.shrink()
             : Container(
                 padding: const EdgeInsets.all(16.0),
                 child: ListTile(
@@ -65,26 +162,59 @@ class ReaderWidget extends StatelessWidget {
                   ),
                   trailing: IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () {
-                        context.read<UIModel>().hideClickedWord();
-                      }),
+                      onPressed: () => hideClickedWord()
+                  ),
                 ),
               ),
-        clickedWordList.isEmpty
-            ? Container()
+        clickedWords.isEmpty
+            ? const SizedBox.shrink()
             : Container(
                 padding: const EdgeInsets.all(16.0),
                 child: ListView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(8),
-                    itemCount: clickedWordList.length,
+                    itemCount: clickedWords.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Text(
-                          "${clickedWordList[index]}: ${translationList[index]}",
+                          "${clickedWords[index]}: ${translations[index]}",
                           style: const TextStyle(fontSize: 20));
                     }),
-              )
+        )
       ],
+    );
+  }
+}
+
+class ExtractedTextSpan extends StatelessWidget{
+  const ExtractedTextSpan({
+    Key? key,
+    required this.wordsAsTextSpan,
+    required this.clickedWord,
+    required this.onPressed
+  }) : super(key: key);
+
+  final List<TextSpan> wordsAsTextSpan;
+  final String? clickedWord;
+  final Function(String) onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+        text: TextSpan(
+            children: wordsAsTextSpan.map((word) =>
+                TextSpan(
+                    text: word.text,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: (clickedWord == word.text)
+                          ? Colors.greenAccent
+                          : Colors.black,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        onPressed(word.text!);
+                      }
+                )).toList())
     );
   }
 }
