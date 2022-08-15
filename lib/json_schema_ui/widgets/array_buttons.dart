@@ -6,7 +6,7 @@ import '../models/mapPath.dart';
 
 class ArrayPanel extends StatelessWidget {
   const ArrayPanel(this.path, {Key? key}) : super(key: key);
-  
+
   final MapPath path;
 
   @override
@@ -14,12 +14,10 @@ class ArrayPanel extends StatelessWidget {
     return Row(
       children: [
         ElevatedButton(
-            onPressed: () => onAdd(context, path), child: const Text('+'),
+            onPressed: () => onAdd(context, path), child: const Text('+')),
 
-        ),
         ElevatedButton(
-            onPressed: () => onRemove(context, path), child: const Text('-')
-        ),
+            onPressed: () => onRemove(context, path), child: const Text('-')),
       ],
     );
   }
@@ -27,6 +25,7 @@ class ArrayPanel extends StatelessWidget {
   void onAdd(BuildContext context, MapPath path) {
     Provider.of<UIModel>(context, listen: false).addArrayElement(path);
   }
+
   void onRemove(BuildContext context, MapPath path) {
     Provider.of<UIModel>(context, listen: false).removeArrayElement(path);
   }

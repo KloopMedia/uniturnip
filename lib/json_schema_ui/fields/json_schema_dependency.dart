@@ -1,43 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/mapPath.dart';
-import '../models/ui_model.dart';
-import 'json_schema_field.dart';
+import 'package:uniturnip/json_schema_ui/fields/object_field.dart';
+import 'package:uniturnip/json_schema_ui/models/mapPath.dart';
+import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
 
 class JSONSchemaDependency extends StatelessWidget {
+  final dynamic pointer;
+  final MapPath path;
+  final Map<String, dynamic> schema;
+  final Map<String, dynamic> uiSchema;
+
   JSONSchemaDependency({
     Key? key,
     required this.schema,
     required MapPath path,
     required this.pointer,
-    this.ui = const {},
+    this.uiSchema = const {},
   })  : path = path.add('leaf', pointer),
         super(key: key);
 
-  final dynamic pointer;
-  final MapPath path;
-  final Map<String, dynamic> schema;
-  final Map<String, dynamic> ui;
+  Map<String, dynamic> _createSchema(
+    Map<String, dynamic> schema,
+    Map<String, dynamic> properties,
+  ) {
+    Map<String, dynamic> newSchema = {...schema};
+    Map<String, dynamic> newSchemaProperties = properties;
+    newSchemaProperties.remove(pointer);
+    newSchema['properties'] = newSchemaProperties;
+    newSchema['type'] = 'object';
+    return newSchema;
+  }
+
+  Map<String, dynamic> _createUiSchema(
+    Map<String, dynamic> uiSchema,
+    Map<String, dynamic> properties,
+  ) {
+    String field = properties.keys.first;
+    if (uiSchema.containsKey(field)) {
+      return {field: uiSchema[field]};
+    } else {
+      return {};
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    dynamic data = context.select((UIModel uiModel) => uiModel.getDataByPath(path));
-    List<dynamic> oneOf = schema['oneOf'] ?? [];
-    for (Map<String, dynamic> dependency in oneOf) {
-      List<dynamic> options = dependency['properties']?[pointer]?['enum'] ?? [];
-      if (options.contains(data)) {
-        Map<String, dynamic> newSchema = {...dependency};
-        Map<String, dynamic> newSchemaProperties = {...dependency['properties']};
-        newSchemaProperties.remove(pointer);
-        newSchema['properties'] = newSchemaProperties;
-        newSchema['type'] = 'object';
-        MapPath newPath = path.removeLast();
-        String field = newSchemaProperties.keys.first;
-        Map<String, dynamic> newUiSchema = ui.containsKey(field) ? {field: ui[field]} : {};
-        return JSONSchemaUIField(schema: newSchema, ui: newUiSchema, path: newPath);
+    return Consumer<UIModel>(builder: (context, uiModel, _) {
+      final data = uiModel.getDataByPath(path);
+      List oneOf = schema['oneOf'] ?? [];
+      // Iterate over dependencies until find desired option's dependency.
+      for (var dependency in oneOf) {
+        // Check if dependency has available options in enum.
+        List options = dependency['properties']?[pointer]?['enum'] ?? [];
+        if (options.contains(data)) {
+          Map<String, dynamic> properties = {...dependency['properties']};
+          final newSchema = _createSchema(dependency, properties);
+          final newUiSchema = _createUiSchema(uiSchema, properties);
+          var newPath = path.removeLast();
+          return JSONSchemaUIField(schema: newSchema, ui: newUiSchema, path: newPath);
+        } else {
+          return const SizedBox.shrink();
+        }
       }
-    }
-    return Text('DEPENDENCY POINTER: $pointer, SCHEMA: $schema, PATH: $path');
+      // If desired dependency is not found return empty widget.
+      return const SizedBox.shrink();
+    });
   }
 }

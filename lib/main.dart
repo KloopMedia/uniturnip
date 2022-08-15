@@ -1,10 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:uniturnip/json_schema_ui/examples/schemas.dart';
 import 'package:uniturnip/json_schema_ui/json_schema_ui.dart';
 import 'package:uniturnip/json_schema_ui/models/mapPath.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +36,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Map<String, dynamic> _data = const {};
-  String _path = '';
+  bool disabled = false;
+
+  // String _path = '';
 
   final List<Tab> myTabs = <Tab>[
     const Tab(icon: Icon(Icons.edit)),
@@ -109,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -121,37 +123,64 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             tabs: myTabs,
           )),
       drawer: Drawer(
-        child: ListView.builder(
-          // Important: Remove any padding from the ListView.
-          controller: ScrollController(),
-          padding: EdgeInsets.zero,
-          itemCount: _schemas.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(_schemas[index]['label']),
-              onTap: () =>  _setSchema(index),
-            );
-          },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: ListView.builder(
+            // Important: Remove any padding from the ListView.
+            controller: ScrollController(),
+            padding: EdgeInsets.zero,
+            itemCount: _schemas.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: Text(_schemas[index]['label']),
+                onTap: () => _setSchema(index),
+              );
+            },
+          ),
         ),
       ),
       body: Center(
         child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Form(
-                  child:JSONSchemaUI(
-                    schema: _schema,
-                    ui: _ui,
-                    onUpdate: _updateDataAndPath,
-                    data: _data,
-                    controller: formController,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    disabled = !disabled;
+                  });
+                },
+                child: Text('Disabled: $disabled')),
+            Form(
+              child: JSONSchemaUI(
+                schema: _schema,
+                ui: _ui,
+                onUpdate: _updateDataAndPath,
+                data: _data,
+                saveAudioRecord: saveAudioRecord,
+                onSubmit: ({required Map<String, dynamic> data}) {
+                  print(data);
+                },
+              ),
+            ),
+            // Text('Data: $_data \n Path: $_path'),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(border: Border.all()),
+                    height: 500,
+                    child: TextFormField(
+                        // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_schema),
+                        controller: formControl,
+                        onChanged: (val) => _updateSchema(schema: json.decode(val)),
+                        decoration: const InputDecoration(labelText: 'SCHEMA'),
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null),
                   ),
-                ),
-                // Text('Data: $_data \n Path: $_path'),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
+                  Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10.0),
@@ -209,8 +238,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
+  Future<String> saveAudioRecord(String filepath) async {
+    // var haystack = await File(filepath).readAsBytes();
+    print('FUTURE AUDIO RECORD');
+    return filepath;
+  }
+
   void _updateDataAndPath({required Map<String, dynamic> data, required MapPath path}) {
-    textControl.text = JsonEncoder.withIndent(' ' * 4).convert(formController.data);
+    print(data);
+    print(path);
+    // textControl.text = JsonEncoder.withIndent(' ' * 4).convert(formController.data);
     // setState(() {
     //   _data = data;
     // });

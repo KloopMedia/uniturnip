@@ -1,54 +1,25 @@
 import 'package:flutter/material.dart';
-import '../../../../json_schema_ui/models/widget_data.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
 class CheckboxWidget extends StatelessWidget {
+  final WidgetData widgetData;
+
   const CheckboxWidget({Key? key, required this.widgetData}) : super(key: key);
 
-  final WidgetData widgetData;
+  void _onChange(bool? value) {
+    widgetData.onChange(widgetData.path, value);
+  }
 
   @override
   Widget build(BuildContext context) {
-    String title = widgetData.schema['title'] ?? '';
-    // String description = widgetData.schema['description'] ?? '';
-
-    final _val = GlobalKey<FormState>();
-
-    return FormField<bool>(
-      validator: (_val){
-        if (widgetData.value == false) {
-          return 'You need to accept terms';
-        }
-      },
-      builder: (FormFieldState<dynamic> field) {
-        return FormField(
-          builder: (state) {
-            return CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
-                autofocus: widgetData.autofocus,    //true
-                value: true == widgetData.value,
-                onChanged: (dynamic newValue) {
-                  widgetData.onChange(context, widgetData.path, newValue);
-                },
-                title: Text(title),
-                subtitle: widgetData.value == false
-                    ? Builder(
-                  builder: (BuildContext context) =>  Text(
-                    'Required',
-                    style: TextStyle(color: Theme.of(context).errorColor),
-                  ),
-                ) : null
-            );
-          },
-          //   validator: (value){
-          //     if(widgetData.value == false){
-          //       return 'Required';
-          //     }else{
-          //       return null;
-          //     }
-          // },
-        );
-      },
-    );
+    return CheckboxListTile(
+        contentPadding: EdgeInsets.zero,
+        controlAffinity: ListTileControlAffinity.leading,
+        autofocus: widgetData.autofocus,
+        value: true == widgetData.value,
+        onChanged: widgetData.disabled ? null : _onChange,
+        title: Text(widgetData.title),
+        subtitle: widgetData.required && widgetData.value == null
+            ? Text('Required', style: TextStyle(color: Theme.of(context).errorColor))
   }
 }

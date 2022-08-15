@@ -23,8 +23,8 @@ class _FileWidgetState extends State<FileWidget> {
   String? _extension;
   bool _isLoading = false;
   bool _userAborted = false;
-  bool _multiPick = true;
-  FileType _pickingType = FileType.any;
+  final bool _multiPick = true;
+  final FileType _pickingType = FileType.any;
   final TextEditingController _controller = TextEditingController();
   String title = '';
   String description = '';
@@ -44,8 +44,9 @@ class _FileWidgetState extends State<FileWidget> {
         type: _pickingType,
         allowMultiple: _multiPick,
         onFileLoading: (FilePickerStatus status) => print(status),
-        allowedExtensions:
-            (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
+        allowedExtensions: (_extension?.isNotEmpty ?? false)
+            ? _extension?.replaceAll(' ', '').split(',')
+            : null,
       ))
           ?.files;
     } on PlatformException catch (e) {
@@ -56,7 +57,8 @@ class _FileWidgetState extends State<FileWidget> {
     if (!mounted) return;
     setState(() {
       _isLoading = false;
-      _fileName = _paths != null ? _paths!.map((e) => e.name).toString() : '...';
+      _fileName =
+          _paths != null ? _paths!.map((e) => e.name).toString() : '...';
       _userAborted = _paths == null;
     });
   }
@@ -86,8 +88,9 @@ class _FileWidgetState extends State<FileWidget> {
     _resetState();
     try {
       String? fileName = await FilePicker.platform.saveFile(
-        allowedExtensions:
-            (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
+        allowedExtensions: (_extension?.isNotEmpty ?? false)
+            ? _extension?.replaceAll(' ', '').split(',')
+            : null,
         type: _pickingType,
       );
       setState(() {
@@ -103,7 +106,6 @@ class _FileWidgetState extends State<FileWidget> {
   }
 
   void _logException(String message) {
-    print(message);
     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
@@ -129,6 +131,7 @@ class _FileWidgetState extends State<FileWidget> {
     return WidgetUI(
       title: title,
       description: description,
+      required: widget.widgetData.required,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -159,7 +162,8 @@ class _FileWidgetState extends State<FileWidget> {
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) =>
                       Text('File $index: ${_fileName ?? '...'}'),
-                  separatorBuilder: (BuildContext context, int index) => const Divider(),
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
                   itemCount: _paths!.isNotEmpty ? _paths!.length : 1,
                 );
               } else {

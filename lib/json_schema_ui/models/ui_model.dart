@@ -2,39 +2,39 @@ import 'dart:collection';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:uniturnip/json_schema_ui/fields/json_schema_field.dart';
-import '../fields/json_schema_leaf.dart';
-import 'mapPath.dart';
-import '../utils.dart';
-import 'widget_data.dart';
+import 'package:uniturnip/json_schema_ui/json_schema_ui.dart';
+import 'package:uniturnip/json_schema_ui/models/mapPath.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+import 'package:uniturnip/json_schema_ui/utils.dart';
 
 class UIModel extends ChangeNotifier {
-  UIModel({Map<String, dynamic> data = const {}, this.onUpdate}) : _data = data;
-
   Map<String, dynamic> _data;
-  bool _isExternal = false;
+  ChangeCallback? onUpdate;
+  SaveAudioRecordCallback? saveAudioRecord;
+  bool disabled;
 
-  bool get isExternal => _isExternal;
+  UIModel({
+    Map<String, dynamic> data = const {},
+    this.disabled = false,
+    this.onUpdate,
+    this.saveAudioRecord,
+  }) : _data = data;
 
   // late WidgetData widgetData;
 
   set data(Map<String, dynamic> value) {
     _data = value;
-    _isExternal = true;
     notifyListeners();
-    // onUpdate!(path: MapPath(), data: _data);
   }
 
 
   void Function({required MapPath path, required Map<String, dynamic> data})?
       onUpdate;
 
-  UnmodifiableMapView<String, dynamic> get data =>
-      UnmodifiableMapView<String, dynamic>(_data);
+  UnmodifiableMapView<String, dynamic> get data => UnmodifiableMapView<String, dynamic>(_data);
 
   void modifyData(MapPath path, dynamic value) {
     _data = Utils.modifyMapByPath(path, _data, value);
-    _isExternal = false;
     notifyListeners();
     onUpdate!(path: path, data: data);
   }
@@ -48,7 +48,6 @@ class UIModel extends ChangeNotifier {
       MapPath newPath = path.add('leaf', arrayLength);
       _data = Utils.modifyMapByPath(newPath, _data, null);
     }
-    _isExternal = false;
     notifyListeners();
     onUpdate!(path: path, data: data);
   }
@@ -58,7 +57,6 @@ class UIModel extends ChangeNotifier {
     if (array != null && array.length > 1) {
       array.removeLast();
       _data = Utils.modifyMapByPath(path, _data, array);
-      _isExternal = false;
       notifyListeners();
       onUpdate!(path: path, data: data);
     }
@@ -71,27 +69,35 @@ class UIModel extends ChangeNotifier {
   /// -------------- for ReaderWidget --------------
 
   TextSpan _sentenceAsTextSpan = const TextSpan();
+
   TextSpan get sentenceAsTextSpan => _sentenceAsTextSpan;
 
   String _clickedWord = '';
+
   String get clickedWord => _clickedWord;
 
   String _translation = '';
+
   String get translation => _translation;
 
   final List<String> _sentenceAsList = [];
+
   List<String> get sentenceAsList => _sentenceAsList;
 
   List<Map<String, dynamic>> _dataValue = [];
+
   List<Map<String, dynamic>> get dataValue => _dataValue;
 
   int _index = 0;
+
   int get index => _index;
 
-  List<String> _clickedWordList = [];
+  final List<String> _clickedWordList = [];
+
   List<String> get clickedWordList => _clickedWordList;
 
-  List<String> _translationList = [];
+  final List<String> _translationList = [];
+
   List<String> get translationList => _translationList;
 
   var tester = false;
@@ -110,29 +116,29 @@ class UIModel extends ChangeNotifier {
   }
 
   void getTextSpan(WidgetData widgetData, BuildContext context) {
-    final List<TextSpan> arrayOfTextSpan = [];
-
+    final List<TextSpan> wordsAsTextSpan = [];
     for (int index = 0; index < sentenceAsList.length; index++) {
-      arrayOfTextSpan.add(TextSpan(text: sentenceAsList[index] + ' '));
+      wordsAsTextSpan.add(TextSpan(text: sentenceAsList[index] + ' '));
     }
 
     _sentenceAsTextSpan = TextSpan(
-        children: arrayOfTextSpan
+        children: wordsAsTextSpan
             .map((e) => TextSpan(
-            text: e.text,
-            style: TextStyle(
-              fontSize: 20.0,
-              color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _clickedWord = e.text!;
-                getTextSpan(widgetData, context);
-                getTranslate();
-                changeCount(widgetData, context);
-                addToWordsList();
-                notifyListeners();
-              }))
+                text: e.text,
+                style: Theme.of(context).textTheme.headlineSmall,
+                // TextStyle(
+                //   fontSize: 20.0,
+                //   color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,
+                // ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    _clickedWord = e.text!;
+                    getTextSpan(widgetData, context);
+                    getTranslate();
+                    changeCount(widgetData, context);
+                    addToWordsList();
+                    notifyListeners();
+                  }))
             .toList());
   }
 
@@ -151,12 +157,15 @@ class UIModel extends ChangeNotifier {
     List<Map<String, dynamic>> copyDataList = List.from(dataValue);
     Map<String, dynamic> copyDataMap = {...dataValue[index]};
     copyDataMap['count'] = copyDataMap['count'] + 1;
+
     if (copyDataMap['count'] == 1) {
-      if (copyDataMap['active'] == true)  copyDataMap['active'] = false;
+      if (copyDataMap['active'] == true) copyDataMap['active'] = false;
     }
+
     copyDataList.removeAt(index);
     copyDataList.insert(index, copyDataMap);
-    widgetData.onChange(context, widgetData.path, copyDataList);
+
+    widgetData.onChange(widgetData.path, copyDataList);
   }
 
   void addToWordsList() {
@@ -173,14 +182,14 @@ class UIModel extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  /// -------------- for LearnerWidget --------------
-
+  /// -------------- for CardWidget --------------
 
   int _counter = 0;
+
   int get counter => _counter;
 
   int _length = 0;
+
   int get length => _length;
 
   void initValues(Map schema) {
@@ -189,10 +198,8 @@ class UIModel extends ChangeNotifier {
   }
 
   getField() {
-    _counter ++;
+    _counter++;
     if (counter == length) _counter = 0;
     notifyListeners();
   }
-
-
 }

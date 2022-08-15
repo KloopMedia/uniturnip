@@ -3,32 +3,57 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
-class TextWidget extends StatelessWidget {
-  TextWidget({Key? key, required this.widgetData}) : super(key: key);
-
+class TextWidget extends StatefulWidget {
   final WidgetData widgetData;
-  final TextEditingController textControl = TextEditingController();
 
+  const TextWidget({Key? key, required this.widgetData}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    String title = widgetData.schema['title'] ?? '';
-    String description = widgetData.schema['description'] ?? '';
-    textControl.text = widgetData.value.toString();
+  State<TextWidget> createState() => _TextWidgetState();
+}
+
+class _TextWidgetState extends State<TextWidget> {
+  late final TextEditingController textControl;
+  late final String title;
+  late final String description;
+  late final bool required;
+
+  @override
+  void initState() {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+    required = widget.widgetData.required;
+    final dynamic value = widget.widgetData.value;
+    final String text = value != null ? value.toString() : '';
+    textControl = TextEditingController(text: text);
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
+    super.initState();
+  }
 
-    if (widgetData.schema.containsKey('examples')) {
-      List<String> _options = widgetData.schema['examples'];
+  @override
+  void dispose() {
+    textControl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.widgetData.schema.containsKey('examples')) {
+      List<String> _options = widget.widgetData.schema['examples'];
 
       return WidgetUI(
         title: title,
         description: description,
+        required: widget.widgetData.required,
         child: Autocomplete<String>(
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode, VoidCallback onFieldSubmitted) {
+          fieldViewBuilder: (
+            BuildContext context,
+            TextEditingController textEditingController,
+            FocusNode focusNode,
+            VoidCallback onFieldSubmitted,
+          ) {
             return TextFormField(
               validator: RequiredValidator(
                 errorText: 'Please enter a text',
@@ -36,10 +61,9 @@ class TextWidget extends StatelessWidget {
               controller: textEditingController,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               focusNode: focusNode,
-              onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
+              onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
               onFieldSubmitted: (String value) {
                 onFieldSubmitted();
-                print('You just typed a new entry  $value');
               },
             );
           },
@@ -53,7 +77,7 @@ class TextWidget extends StatelessWidget {
             });
           },
           onSelected: (String selection) {
-            widgetData.onChange(context, widgetData.path, selection);
+            widget.widgetData.onChange(widget.widgetData.path, selection);
           },
         ),
       );
@@ -62,16 +86,19 @@ class TextWidget extends StatelessWidget {
     return WidgetUI(
       title: title,
       description: description,
+      required: required,
       child: TextFormField(
         validator: RequiredValidator(
           errorText: 'Please enter a text',
         ),
         controller: textControl,
-        onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
-        enabled: !widgetData.disabled,
-        autofocus: widgetData.autofocus,
-        readOnly: widgetData.readonly,
-        decoration: const InputDecoration(border: OutlineInputBorder()),
+        onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
+        enabled: !widget.widgetData.disabled,
+        autofocus: widget.widgetData.autofocus,
+        readOnly: widget.widgetData.readonly,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+        ),
       ),
     );
   }
