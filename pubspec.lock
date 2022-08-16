@@ -11,9 +11,11 @@ packages:
   audio_recorder:
     dependency: "direct main"
     description:
-      path: "packages/audio_recorder"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "7b47d423a619bc7f073e849d250d31b175b710ba"
+      url: "https://github.com/KloopMedia/audio_recorder.git"
+    source: git
     version: "0.0.1"
   audio_session:
     dependency: transitive
