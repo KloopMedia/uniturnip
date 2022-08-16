@@ -12,7 +12,8 @@ class AudioWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? url = widgetData.uiSchema['ui:options']['default'];
+    final String defaultValue = widgetData.uiSchema['ui:options']['default'] ?? "";
+    final String? url = defaultValue.isNotEmpty ? defaultValue : widgetData.value;
     return WidgetUI(
       title: widgetData.title,
       description: widgetData.description,
