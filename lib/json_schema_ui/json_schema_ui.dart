@@ -15,6 +15,8 @@ typedef SubmitCallback = void Function({
 
 typedef SaveAudioRecordCallback = Future<String> Function(String filepath);
 
+typedef FileCallback = Future<String> Function(List<String?> paths, {bool private});
+
 class JSONSchemaUI extends StatelessWidget {
   final Map<String, dynamic> schema;
   final Map<String, dynamic> ui;
@@ -22,6 +24,7 @@ class JSONSchemaUI extends StatelessWidget {
   final ChangeCallback? onUpdate;
   final SubmitCallback? onSubmit;
   final SaveAudioRecordCallback? saveAudioRecord;
+  final FileCallback? saveFile;
   final UIModel _formController;
   final bool hideSubmitButton;
 
@@ -33,6 +36,7 @@ class JSONSchemaUI extends StatelessWidget {
     this.onUpdate,
     this.onSubmit,
     this.saveAudioRecord,
+    this.saveFile,
     this.hideSubmitButton = false,
     UIModel? formController,
   })  : _formController = formController ??
@@ -40,6 +44,7 @@ class JSONSchemaUI extends StatelessWidget {
               data: data,
               onUpdate: onUpdate,
               saveAudioRecord: saveAudioRecord,
+              saveFile: saveFile,
             ),
         super(key: key);
 

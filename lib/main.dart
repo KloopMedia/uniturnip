@@ -157,7 +157,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 ui: _ui,
                 onUpdate: _updateDataAndPath,
                 data: _data,
+                // disabled: disabled,
                 saveAudioRecord: saveAudioRecord,
+                saveFile: saveFile,
                 onSubmit: ({required Map<String, dynamic> data}) {
                   print(data);
                 },
@@ -228,6 +230,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // var haystack = await File(filepath).readAsBytes();
     print('FUTURE AUDIO RECORD');
     return filepath;
+  }
+
+  Future<String> saveFile(List<String?> filepath, {bool private = false}) async {
+    print('FUTURE SAVE FILE');
+    print(filepath);
+    return filepath[0]!;
   }
 
   void _updateDataAndPath({required Map<String, dynamic> data, required MapPath path}) {
