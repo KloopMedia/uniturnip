@@ -23,10 +23,16 @@ class UIModel extends ChangeNotifier {
 
   }) : _data = data;
 
+  // late WidgetData widgetData;
+
   set data(Map<String, dynamic> value) {
     _data = value;
     notifyListeners();
   }
+
+
+  void Function({required MapPath path, required Map<String, dynamic> data})?
+      onUpdate;
 
   UnmodifiableMapView<String, dynamic> get data => UnmodifiableMapView<String, dynamic>(_data);
 
@@ -97,8 +103,12 @@ class UIModel extends ChangeNotifier {
 
   List<String> get translationList => _translationList;
 
-  void setData(List<Map<String, dynamic>> value) {
-    _dataValue = value;
+  var tester = false;
+  void setData(WidgetData widgetData, List<Map<String, dynamic>>? value) {
+    if (widgetData.disabled == false) {
+      _dataValue = value!;
+      tester = true;
+    }
   }
 
   void getSentenceAsList() {

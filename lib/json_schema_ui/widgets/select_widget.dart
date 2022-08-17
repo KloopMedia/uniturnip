@@ -7,7 +7,6 @@ class SelectWidget extends StatelessWidget {
   const SelectWidget({Key? key, required this.widgetData}) : super(key: key);
 
   final WidgetData widgetData;
-
   void _onChange(dynamic value) {
     widgetData.onChange(widgetData.path, value);
   }

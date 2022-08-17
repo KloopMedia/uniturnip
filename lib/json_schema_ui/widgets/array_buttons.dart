@@ -15,6 +15,7 @@ class ArrayPanel extends StatelessWidget {
       children: [
         ElevatedButton(
             onPressed: () => onAdd(context, path), child: const Text('+')),
+
         ElevatedButton(
             onPressed: () => onRemove(context, path), child: const Text('-')),
       ],

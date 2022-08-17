@@ -184,39 +184,53 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   ),
                   Row(
                     children: [
-                      Expanded(
-                          child: Container(
+                      Container(
                         padding: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(border: Border.all()),
                         height: 500,
                         child: TextFormField(
-                            // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_ui),
-                            controller: uiControl,
-                            onChanged: (val) => _updateUi(ui: json.decode(val)),
-                            decoration: const InputDecoration(labelText: 'UI'),
+                          // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_schema),
+                            controller: formControl,
+                            onChanged: (val) => _updateSchema(schema: json.decode(val)),
+                            decoration: const InputDecoration(labelText: 'SCHEMA'),
                             keyboardType: TextInputType.multiline,
                             maxLines: null),
-                      )),
-                      Expanded(
-                          child: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(border: Border.all()),
-                        height: 500,
-                        child: TextFormField(
-                            // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_data),
-                            controller: textControl,
-                            onChanged: (val) => formController.data = json.decode(val),
-                            decoration: const InputDecoration(labelText: 'DATA'),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null),
-                      )),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(border: Border.all()),
+                                height: 500,
+                                child: TextFormField(
+                                  // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_ui),
+                                    controller: uiControl,
+                                    onChanged: (val) => _updateUi(ui: json.decode(val)),
+                                    decoration: const InputDecoration(labelText: 'UI'),
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: null),
+                              )),
+                          Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(border: Border.all()),
+                                height: 500,
+                                child: TextFormField(
+                                  // initialValue: JsonEncoder.withIndent(' ' * 4).convert(_data),
+                                    controller: textControl,
+                                    onChanged: (val) => formController.data = json.decode(val),
+                                    decoration: const InputDecoration(labelText: 'DATA'),
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: null),
+                              )),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-            ),
-          ],
-        )),
+                  ),
+                ),
+              ],
+            )),
       ),
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},
