@@ -82,7 +82,7 @@ class JSONSchemaUI extends StatelessWidget {
                   height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: context.read<UIModel>().disabled ? null : () {
                       if (_formKey.currentState!.validate()) {
                         onSubmit!(data: context.read<UIModel>().data);
                       }
