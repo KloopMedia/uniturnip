@@ -21,11 +21,17 @@ class _ReaderWidgetState extends State<ReaderWidget> {
   final List<String> _words = [];
   List<String> get words => _words;
 
+  List<List<Map<String, dynamic>>> _value = [];
+  List<List<Map<String, dynamic>>> get value => _value;
+
   List<Map<String, dynamic>> _formData = [];
   List<Map<String, dynamic>> get formData => _formData;
 
   int _index = 0;
   int get index => _index;
+
+  int _counter = 0;
+  int get counter => _counter;
 
   final List<String> _clickedWords = [];
   List<String> get clickedWords => _clickedWords;
@@ -33,16 +39,18 @@ class _ReaderWidgetState extends State<ReaderWidget> {
   final List<String> _translations = [];
   List<String> get translations => _translations;
 
-  List<Map<String, dynamic>> _formDataAsList = [];
-  List<Map<String, dynamic>> get formDataAsList => _formDataAsList;
-
   final List<TextSpan> _wordsAsTextSpan = [];
   List<TextSpan> get wordsAsTextSpan => _wordsAsTextSpan;
 
   @override
   void initState() {
-    /// получаем в виде списка данные текста из formData
-    _formData = widget.widgetData.value;
+    _value = widget.widgetData.value;
+    getText();
+    super.initState();
+  }
+
+  void getText() {
+    _formData = value[counter]; /// получаем в виде списка данные одного предложения
 
     /// получаем список всех слов текста (words)
     words.clear();
@@ -51,43 +59,43 @@ class _ReaderWidgetState extends State<ReaderWidget> {
     }
 
     /// все слова из списка words оборачиваем виджетом TextSpan
+    wordsAsTextSpan.clear();
     for (int index = 0; index < words.length; index++) {
       _wordsAsTextSpan.add(TextSpan(text: words[index] + ' '));
     }
-    super.initState();
   }
 
   setOnTapChanges(String word) {
     _clickedWord = word;
-    getTranslate();
+    getTranslation();
     increaseCount();
-    getClickedWords();
+    getClickedWordsWithTranslation();
   }
 
   void hideClickedWord() {
     setState(() => _clickedWord = '');
   }
 
-  void getTranslate() {
-    /// убираем лишний пробел в конце слова
-    var wordWithoutSpace = clickedWord.substring(0, clickedWord.length - 1);
+  void getTranslation() {
+    var wordWithoutSpace = clickedWord.substring(0, clickedWord.length - 1); /// убираем лишний пробел в конце слова
+    _index = words.indexOf(wordWithoutSpace); /// находим под каким индексом находится нажатое слово в списке всех слов
+    _translation = formData[index]['translation']; /// получаем перевод нажатого слова
 
-    /// находим под каким индексом находится нажатое слово в списке всех слов
-    _index = words.indexOf(wordWithoutSpace);
-
-    /// получаем перевод нажатого слова
-    _translation = formData[index]['translation'];
   }
 
   void increaseCount() {
     Map<String, dynamic> clickedWordProperties;
+    List<List<Map<String, dynamic>>> updatedValueToFormData = [];
+    List<List<Map<String, dynamic>>> updatedValueFromFormData = [];
+    List<Map<String, dynamic>> arrayOfTextProperties = [];
 
     /// из formData получаем данные текста с измененными значениями свойств
-    _formData = widget.widgetData.value;
-    _formDataAsList = List.from(formData);
+    updatedValueFromFormData = widget.widgetData.value;
+    updatedValueToFormData = List.from(updatedValueFromFormData);
+    arrayOfTextProperties = List.from(updatedValueFromFormData[counter]);
 
     /// по индексу получаем свойства нажатого слова
-    clickedWordProperties = {...formData[index]};
+    clickedWordProperties = {...arrayOfTextProperties[index]};
 
     /// при каждом нажатии на слово, свойство count этого слова увеличивается на один
     clickedWordProperties['count'] = clickedWordProperties['count'] + 1;
@@ -98,17 +106,33 @@ class _ReaderWidgetState extends State<ReaderWidget> {
     }
 
     /// заменяем в схеме изменившиеся свойства
-    _formDataAsList.removeAt(index);
-    _formDataAsList.insert(index, clickedWordProperties);
-    widget.widgetData.onChange(widget.widgetData.path, formDataAsList);
+    arrayOfTextProperties.removeAt(index);
+    arrayOfTextProperties.insert(index, clickedWordProperties);
+    updatedValueToFormData.removeAt(counter);
+    updatedValueToFormData.insert(counter, arrayOfTextProperties);
+    widget.widgetData.onChange(widget.widgetData.path, updatedValueToFormData);
   }
 
   /// добавляем нажатые слова по очереди в список для отображения в UI
-  void getClickedWords() {
-    if (!clickedWords.contains(clickedWord) &&
-        !translations.contains(translation)) {
-      _clickedWords.add(clickedWord);
+  void getClickedWordsWithTranslation() {
+    if (!clickedWords.contains(clickedWord) && !translations.contains(translation)) {
+      _clickedWords.add(getModifiedWord(clickedWord));
       _translations.add(translation);
+    }
+  }
+
+  /// убираем лишние знаки в начале и конце слова для отображения в UI
+  String getModifiedWord (String word) {
+    String modifiedWord;
+    if (word.endsWith('" ') || word.endsWith('? ') || word.endsWith('! ') || word.endsWith('- ')) {
+      modifiedWord = word.substring(0, word.length - 2);
+      return modifiedWord;
+    } else if (word.startsWith('"')) {
+      modifiedWord = word.substring(1, word.length);
+      return modifiedWord;
+    } else {
+      modifiedWord = word.substring(0, word.length - 1);
+      return modifiedWord;
     }
   }
 
@@ -129,7 +153,9 @@ class _ReaderWidgetState extends State<ReaderWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
+              (counter == 0)
+                ? const SizedBox.shrink()
+                : Container(
                   color: Colors.grey,
                   child: IconButton(
                       icon: const Icon(
@@ -137,9 +163,14 @@ class _ReaderWidgetState extends State<ReaderWidget> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        // TODO: Add the method to get the previous sentence
+                        setState(() {
+                          _counter--;
+                          getText();
+                        });
                       })),
-              Container(
+              (counter == value.length - 1)
+                ? const SizedBox.shrink()
+                : Container(
                   color: Colors.grey,
                   child: IconButton(
                       icon: const Icon(
@@ -147,17 +178,20 @@ class _ReaderWidgetState extends State<ReaderWidget> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        // TODO: Add the method to get the next sentence
+                        setState(() {
+                          _counter++;
+                        });
+                          getText();
                       })),
             ]),
         ),
-        clickedWord.isEmpty
+        (clickedWord.isEmpty)
             ? const SizedBox.shrink()
             : Container(
                 padding: const EdgeInsets.all(16.0),
                 child: ListTile(
                   title: Text(
-                    "$clickedWord: $translation",
+                    "${getModifiedWord(clickedWord)}: $translation",
                     style: const TextStyle(fontSize: 20.0),
                   ),
                   trailing: IconButton(
@@ -166,7 +200,7 @@ class _ReaderWidgetState extends State<ReaderWidget> {
                   ),
                 ),
               ),
-        clickedWords.isEmpty
+        (clickedWords.isEmpty)
             ? const SizedBox.shrink()
             : Container(
                 padding: const EdgeInsets.all(16.0),

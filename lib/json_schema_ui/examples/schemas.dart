@@ -78,10 +78,62 @@ class Schemas {
     },
     "formData": {
       "fixedItemsList": [
-        {"word": "The", "translation": "артикль", "count": 0, "active": true},
-        {"word": "first", "translation": "первый", "count": 0, "active": true},
-        {"word": "simple", "translation": "простой", "count": 0, "active": true},
-        {"word": "text", "translation": "текст", "count": 0, "active": true}
+        [
+          {"word": "One", "translation": "один", "count": 0, "active": false},
+          {"word": "day", "translation": "день", "count": 0, "active": false},
+          {"word": "the", "translation": "артикль", "count": 0, "active": false},
+          {"word": "Billy Gruff", "translation": "Билли Граф", "count": 0, "active": false},
+          {"word": "looked", "translation": "посмотрел", "count": 0, "active": false},
+          {"word": "at", "translation": "на", "count": 0, "active": false},
+          {"word": "the", "translation": "артикль", "count": 0, "active": false},
+          {"word": "high", "translation": "высокий", "count": 0, "active": false},
+          {"word": "mountain", "translation": "гора", "count": 0, "active": false},
+          {"word": "overhead,", "translation": "вверху", "count": 0, "active": false},
+          {"word": "and", "translation": "и", "count": 0, "active": false},
+          {"word": "thought,", "translation": "подумал", "count": 0, "active": false},
+          {"word": "\"It", "translation": "это", "count": 0, "active": false},
+          {"word": "looks", "translation": "смотрится", "count": 0, "active": false},
+          {"word": "as", "translation": "ка", "count": 0, "active": false},
+          {"word": "though", "translation": "хотя", "count": 0, "active": false},
+          {"word": "there", "translation": "там", "count": 0, "active": false},
+          {"word": "were", "translation": "были", "count": 0, "active": false},
+          {"word": "a", "translation": "артикль", "count": 0, "active": false},
+          {"word": "great", "translation": "великий", "count": 0, "active": false},
+          {"word": "deal", "translation": "сделка", "count": 0, "active": false},
+          {"word": "of", "translation": "от, из", "count": 0, "active": false},
+          {"word": "fine", "translation": "хорошая", "count": 0, "active": false},
+          {"word": "grass\"", "translation": "трава", "count": 0, "active": false}
+        ],
+        [
+          {"word": "I'll", "translation": "я буду", "count": 0, "active": false},
+          {"word": "eat", "translation": "есть", "count": 0, "active": false},
+          {"word": "so", "translation": "столько", "count": 0, "active": false},
+          {"word": "much", "translation": "много", "count": 0, "active": false},
+          {"word": "grass", "translation": "трава", "count": 0, "active": false},
+          {"word": "that", "translation": "что", "count": 0, "active": false},
+          {"word": "I'll", "translation": "я", "count": 0, "active": false},
+          {"word": "grow", "translation": "расти", "count": 0, "active": false},
+          {"word": "to be", "translation": "быть", "count": 0, "active": false},
+          {"word": "as", "translation": "как", "count": 0, "active": false},
+          {"word": "big", "translation": "большой", "count": 0, "active": false},
+          {"word": "as", "translation": "как", "count": 0, "active": false},
+          {"word": "anybody\"", "translation": "кто-то", "count": 0, "active": false}
+        ],
+        [
+          {"word": "Then", "translation": "затем", "count": 0, "active": false},
+          {"word": "just", "translation": "только", "count": 0, "active": false},
+          {"word": "stop", "translation": "остановиться", "count": 0, "active": false},
+          {"word": "a", "translation": "артикль", "count": 0, "active": false},
+          {"word": "bit-", "translation": "немного", "count": 0, "active": false},
+          {"word": "for", "translation": "для", "count": 0, "active": false},
+          {"word": "you're", "translation": "ты", "count": 0, "active": false},
+          {"word": "the", "translation": "артикль", "count": 0, "active": false},
+          {"word": "one", "translation": "один", "count": 0, "active": false},
+          {"word": "I've", "translation": "я", "count": 0, "active": false},
+          {"word": "been", "translation": "быть", "count": 0, "active": false},
+          {"word": "waiting", "translation": "ждать", "count": 0, "active": false},
+          {"word": "for", "translation": "для", "count": 0, "active": false}
+        ],
       ]
     }
   };
