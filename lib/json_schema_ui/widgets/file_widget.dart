@@ -23,7 +23,7 @@ class _FileWidgetState extends State<FileWidget> {
   late final bool required = widget.widgetData.required;
   late final bool _multiPick;
   late final bool _private;
-  final FileType _pickingType = FileType.any;
+  // final FileType _pickingType = FileType.any;
   bool _isLoading = false;
   List<PlatformFile>? _files;
 
@@ -34,10 +34,34 @@ class _FileWidgetState extends State<FileWidget> {
     super.initState();
   }
 
-  void _pickFiles() async {
+  // void _pickFiles() async {
+  //   try {
+  //     var result = await FilePicker.platform.pickFiles(
+  //       type: _pickingType,
+  //       allowMultiple: _multiPick,
+  //     );
+  //     _files = result?.files;
+  //     var paths = result?.paths;
+  //     if (!mounted || paths == null) return;
+  //     var storagePath = await context.read<UIModel>().saveFile!(
+  //       paths,
+  //       private: _private,
+  //     );
+  //     widget.widgetData.onChange(widget.widgetData.path, storagePath);
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation: $e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   }
+  //   setState(() {
+  //     _isLoading = false;
+  //   });
+  // }
+
+  void _pickImage() async {
     try {
       var result = await FilePicker.platform.pickFiles(
-        type: _pickingType,
+        type: FileType.image,
         allowMultiple: _multiPick,
       );
       _files = result?.files;
@@ -45,6 +69,57 @@ class _FileWidgetState extends State<FileWidget> {
       if (!mounted || paths == null) return;
       var storagePath = await context.read<UIModel>().saveFile!(
         paths,
+        FileType.image,
+        private: _private,
+      );
+      widget.widgetData.onChange(widget.widgetData.path, storagePath);
+    } on PlatformException catch (e) {
+      _logException('Unsupported operation: $e');
+    } catch (e) {
+      _logException(e.toString());
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _pickVideo() async {
+    try {
+      var result = await FilePicker.platform.pickFiles(
+        type: FileType.video,
+        allowMultiple: _multiPick,
+      );
+      _files = result?.files;
+      var paths = result?.paths;
+      if (!mounted || paths == null) return;
+      var storagePath = await context.read<UIModel>().saveFile!(
+        paths,
+        FileType.video,
+        private: _private,
+      );
+      widget.widgetData.onChange(widget.widgetData.path, storagePath);
+    } on PlatformException catch (e) {
+      _logException('Unsupported operation: $e');
+    } catch (e) {
+      _logException(e.toString());
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _pickDocument() async {
+    try {
+      var result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: _multiPick,
+      );
+      _files = result?.files;
+      var paths = result?.paths;
+      if (!mounted || paths == null) return;
+      var storagePath = await context.read<UIModel>().saveFile!(
+        paths,
+        FileType.video,
         private: _private,
       );
       widget.widgetData.onChange(widget.widgetData.path, storagePath);
@@ -119,11 +194,24 @@ class _FileWidgetState extends State<FileWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ElevatedButton.icon(
-            onPressed: () => _pickFiles(),
-            icon: const Icon(Icons.upload),
-            label: const Text('Load file'),
+          Row(
+            children: [
+              IconButton(onPressed: () {
+                _pickImage();
+              }, icon: const Icon(Icons.image)),
+              IconButton(onPressed: () {
+                _pickVideo();
+              }, icon: const Icon(Icons.video_file)),
+              IconButton(onPressed: () {
+                _pickDocument();
+              }, icon: const Icon(Icons.insert_drive_file))
+            ],
           ),
+          // ElevatedButton.icon(
+          //   onPressed: () => _pickFiles(),
+          //   icon: const Icon(Icons.upload),
+          //   label: const Text('Load file'),
+          // ),
           Builder(
             builder: (BuildContext context) {
               if (_isLoading) {

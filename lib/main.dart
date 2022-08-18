@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:uniturnip/json_schema_ui/examples/schemas.dart';
 import 'package:uniturnip/json_schema_ui/json_schema_ui.dart';
@@ -232,8 +233,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return filepath;
   }
 
-  Future<String> saveFile(List<String?> filepath, {bool private = false}) async {
+  Future<String> saveFile(List<String?> filepath, FileType type, {bool private = false}) async {
     print('FUTURE SAVE FILE');
+    print(type);
     print(filepath);
     return filepath[0]!;
   }

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/fields/object_field.dart';
@@ -15,7 +16,7 @@ typedef SubmitCallback = void Function({
 
 typedef SaveAudioRecordCallback = Future<String> Function(String filepath);
 
-typedef FileCallback = Future<String> Function(List<String?> paths, {bool private});
+typedef FileCallback = Future<String> Function(List<String?> paths, FileType type, {bool private});
 
 class JSONSchemaUI extends StatelessWidget {
   final Map<String, dynamic> schema;
@@ -82,11 +83,13 @@ class JSONSchemaUI extends StatelessWidget {
                   height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: context.read<UIModel>().disabled ? null : () {
-                      if (_formKey.currentState!.validate()) {
-                        onSubmit!(data: context.read<UIModel>().data);
-                      }
-                    },
+                    onPressed: context.read<UIModel>().disabled
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              onSubmit!(data: context.read<UIModel>().data);
+                            }
+                          },
                     child: Text(
                       "Submit",
                       style: Theme.of(context).textTheme.titleLarge,
