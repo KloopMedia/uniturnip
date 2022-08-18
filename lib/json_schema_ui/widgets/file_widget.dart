@@ -1,65 +1,135 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
-import '../../../../json_schema_ui/models/widget_data.dart';
 import 'widget_ui.dart';
 
-// TODO: Refactor FileWidget
 class FileWidget extends StatefulWidget {
-  const FileWidget({Key? key, required this.widgetData}) : super(key: key);
-
   final WidgetData widgetData;
 
+  const FileWidget({Key? key, required this.widgetData}) : super(key: key);
+
   @override
-  _FileWidgetState createState() => _FileWidgetState();
+  State<FileWidget> createState() => _FileWidgetState();
 }
 
 class _FileWidgetState extends State<FileWidget> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  String? _fileName;
-  List<PlatformFile>? _paths;
-  String? _extension;
+  late final String title = widget.widgetData.title;
+  late final String description = widget.widgetData.description;
+  late final bool required = widget.widgetData.required;
+  late final bool _multiPick;
+  late final bool _private;
+  // final FileType _pickingType = FileType.any;
   bool _isLoading = false;
-  bool _userAborted = false;
-  final bool _multiPick = true;
-  final FileType _pickingType = FileType.any;
-  final TextEditingController _controller = TextEditingController();
-  String title = '';
-  String description = '';
+  List<PlatformFile>? _files;
 
   @override
   void initState() {
+    _multiPick = widget.widgetData.uiSchema['ui:options']?["multiple"] ?? false;
+    _private = widget.widgetData.uiSchema['ui:options']?["private"] ?? false;
     super.initState();
-    title = widget.widgetData.schema['title'] ?? '';
-    description = widget.widgetData.schema['description'] ?? '';
-    _controller.addListener(() => _extension = _controller.text);
   }
 
-  void _pickFiles() async {
-    _resetState();
+  // void _pickFiles() async {
+  //   try {
+  //     var result = await FilePicker.platform.pickFiles(
+  //       type: _pickingType,
+  //       allowMultiple: _multiPick,
+  //     );
+  //     _files = result?.files;
+  //     var paths = result?.paths;
+  //     if (!mounted || paths == null) return;
+  //     var storagePath = await context.read<UIModel>().saveFile!(
+  //       paths,
+  //       private: _private,
+  //     );
+  //     widget.widgetData.onChange(widget.widgetData.path, storagePath);
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation: $e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   }
+  //   setState(() {
+  //     _isLoading = false;
+  //   });
+  // }
+
+  void _pickImage() async {
     try {
-      _paths = (await FilePicker.platform.pickFiles(
-        type: _pickingType,
+      var result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
         allowMultiple: _multiPick,
-        onFileLoading: (FilePickerStatus status) => print(status),
-        allowedExtensions: (_extension?.isNotEmpty ?? false)
-            ? _extension?.replaceAll(' ', '').split(',')
-            : null,
-      ))
-          ?.files;
+      );
+      _files = result?.files;
+      var paths = result?.paths;
+      if (!mounted || paths == null) return;
+      var storagePath = await context.read<UIModel>().saveFile!(
+        paths,
+        FileType.image,
+        private: _private,
+      );
+      widget.widgetData.onChange(widget.widgetData.path, storagePath);
     } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
+      _logException('Unsupported operation: $e');
     } catch (e) {
       _logException(e.toString());
     }
-    if (!mounted) return;
     setState(() {
       _isLoading = false;
-      _fileName =
-          _paths != null ? _paths!.map((e) => e.name).toString() : '...';
-      _userAborted = _paths == null;
+    });
+  }
+
+  void _pickVideo() async {
+    try {
+      var result = await FilePicker.platform.pickFiles(
+        type: FileType.video,
+        allowMultiple: _multiPick,
+      );
+      _files = result?.files;
+      var paths = result?.paths;
+      if (!mounted || paths == null) return;
+      var storagePath = await context.read<UIModel>().saveFile!(
+        paths,
+        FileType.video,
+        private: _private,
+      );
+      widget.widgetData.onChange(widget.widgetData.path, storagePath);
+    } on PlatformException catch (e) {
+      _logException('Unsupported operation: $e');
+    } catch (e) {
+      _logException(e.toString());
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _pickDocument() async {
+    try {
+      var result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: _multiPick,
+      );
+      _files = result?.files;
+      var paths = result?.paths;
+      if (!mounted || paths == null) return;
+      var storagePath = await context.read<UIModel>().saveFile!(
+        paths,
+        FileType.video,
+        private: _private,
+      );
+      widget.widgetData.onChange(widget.widgetData.path, storagePath);
+    } on PlatformException catch (e) {
+      _logException('Unsupported operation: $e');
+    } catch (e) {
+      _logException(e.toString());
+    }
+    setState(() {
+      _isLoading = false;
     });
   }
 
@@ -67,6 +137,7 @@ class _FileWidgetState extends State<FileWidget> {
     _resetState();
     try {
       bool? result = await FilePicker.platform.clearTemporaryFiles();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: result! ? Colors.green : Colors.red,
@@ -84,24 +155,14 @@ class _FileWidgetState extends State<FileWidget> {
     }
   }
 
-  Future<void> _saveFile() async {
-    _resetState();
-    try {
-      String? fileName = await FilePicker.platform.saveFile(
-        allowedExtensions: (_extension?.isNotEmpty ?? false)
-            ? _extension?.replaceAll(' ', '').split(',')
-            : null,
-        type: _pickingType,
-      );
+  void _removeFile(int index) {
+    if (_files != null) {
+      var paths = _files!.toList();
+      var removedFile = paths.removeAt(index);
       setState(() {
-        _userAborted = fileName == null;
+        _files = paths;
       });
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
+      _logException('Removed file: ${removedFile.name}');
     }
   }
 
@@ -120,9 +181,7 @@ class _FileWidgetState extends State<FileWidget> {
     }
     setState(() {
       _isLoading = true;
-      _fileName = null;
-      _paths = null;
-      _userAborted = false;
+      _files = null;
     });
   }
 
@@ -131,46 +190,66 @@ class _FileWidgetState extends State<FileWidget> {
     return WidgetUI(
       title: title,
       description: description,
-      required: widget.widgetData.required,
+      required: required,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
+        children: [
           Row(
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () => _pickFiles(),
-                child: Text(_multiPick ? 'Pick files' : 'Pick file'),
-              ),
-              ElevatedButton(
-                onPressed: () => _saveFile(),
-                child: const Text('Save file'),
-              ),
-              ElevatedButton(
-                onPressed: () => _clearCachedFiles(),
-                child: const Text('Clear temporary files'),
-              ),
+            children: [
+              IconButton(onPressed: () {
+                _pickImage();
+              }, icon: const Icon(Icons.image)),
+              IconButton(onPressed: () {
+                _pickVideo();
+              }, icon: const Icon(Icons.video_file)),
+              IconButton(onPressed: () {
+                _pickDocument();
+              }, icon: const Icon(Icons.insert_drive_file))
             ],
           ),
+          // ElevatedButton.icon(
+          //   onPressed: () => _pickFiles(),
+          //   icon: const Icon(Icons.upload),
+          //   label: const Text('Load file'),
+          // ),
           Builder(
             builder: (BuildContext context) {
               if (_isLoading) {
                 return const CircularProgressIndicator();
-              } else if (_userAborted) {
-                return const Text('User has aborted the dialog');
-              } else if (_paths != null) {
-                return ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) =>
-                      Text('File $index: ${_fileName ?? '...'}'),
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
-                  itemCount: _paths!.isNotEmpty ? _paths!.length : 1,
+              } else if (_files != null) {
+                return Column(
+                  children: [
+                    ListTile(
+                      title: const Text('Files'),
+                      trailing: TextButton.icon(
+                        onPressed: () => _clearCachedFiles(),
+                        icon: const Icon(Icons.clear_all),
+                        label: const Text('Clear all'),
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) => ListTile(
+                        title: Text('File $index: ${_files![index].name}'),
+                        trailing: IconButton(
+                          onPressed: () => _removeFile(index),
+                          icon: const Icon(Icons.clear),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                      separatorBuilder: (BuildContext context, int index) => const Divider(),
+                      itemCount: _files!.length,
+                    ),
+                  ],
                 );
               } else {
                 return const SizedBox.shrink();
               }
             },
-          ),
+          )
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/fields/object_field.dart';
@@ -15,6 +16,8 @@ typedef SubmitCallback = void Function({
 
 typedef SaveAudioRecordCallback = Future<String> Function(String filepath);
 
+typedef FileCallback = Future<String> Function(List<String?> paths, FileType type, {bool private});
+
 class JSONSchemaUI extends StatelessWidget {
   final Map<String, dynamic> schema;
   final Map<String, dynamic> ui;
@@ -22,6 +25,7 @@ class JSONSchemaUI extends StatelessWidget {
   final ChangeCallback? onUpdate;
   final SubmitCallback? onSubmit;
   final SaveAudioRecordCallback? saveAudioRecord;
+  final FileCallback? saveFile;
   final UIModel _formController;
   final bool hideSubmitButton;
 
@@ -33,6 +37,7 @@ class JSONSchemaUI extends StatelessWidget {
     this.onUpdate,
     this.onSubmit,
     this.saveAudioRecord,
+    this.saveFile,
     this.hideSubmitButton = false,
     UIModel? formController,
   })  : _formController = formController ??
@@ -40,6 +45,7 @@ class JSONSchemaUI extends StatelessWidget {
               data: data,
               onUpdate: onUpdate,
               saveAudioRecord: saveAudioRecord,
+              saveFile: saveFile,
             ),
         super(key: key);
 
@@ -49,11 +55,17 @@ class JSONSchemaUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<UIModel>.value(
       value: _formController,
+      // create: (context) => UIModel(
+      //   data: data,
+      //   onUpdate: onUpdate,
+      //   saveAudioRecord: saveAudioRecord,
+      // ),
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.end,
             children: [
               JSONSchemaUIField(
                 schema: schema,
@@ -66,18 +78,34 @@ class JSONSchemaUI extends StatelessWidget {
                 if (hideSubmitButton) {
                   return const SizedBox.shrink();
                 }
-                return SizedBox(
+                return Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        onSubmit!(data: context.read<UIModel>().data);
-                      }
-                    },
-                    child: const Text("Submit"),
+                    onPressed: context.read<UIModel>().disabled
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              onSubmit!(data: context.read<UIModel>().data);
+                            }
+                          },
+                    child: Text(
+                      "Submit",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    // style: ButtonStyle(
+                    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //         RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(18.0),
+                    //             side: BorderSide(
+                    //                 color: Theme.of(context)
+                    //                     .colorScheme
+                    //                     .copyWith()
+                    //                     .primary)))),
                   ),
                 );
-              }),
+              })
             ],
           ),
         ),
