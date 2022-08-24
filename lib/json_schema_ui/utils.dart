@@ -125,7 +125,7 @@ class Utils {
   }
 
   /// Return keys from schema [Schema]<Map>.
-  static List retrieveSchemaFields({
+  List retrieveSchemaFields({
     required Map<String, dynamic> schema,
     required Map<String, dynamic> uiSchema,
     required BuildContext context,
