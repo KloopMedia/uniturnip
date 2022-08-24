@@ -63,7 +63,6 @@ class Schemas {
     "ui": {
       "fixedItemsList": {"ui:widget": "reader"},
       "card": {
-        "ui:widget": "card",
         "ui:order": ["newInput2", "newInput3", "newInput1", "newInput4"],
         "newInput1": {"ui:emptyValue": ""},
         "newInput2": {
