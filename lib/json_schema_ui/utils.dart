@@ -32,6 +32,8 @@ class Utils {
 
     if (uiSchema != null && uiSchema.containsKey('ui:widget')) {
       widgetType = uiSchema['ui:widget'];
+    } else if (schema.containsKey('subtype')) {
+      widgetType = schema['subtype'];
     } else if (schema.containsKey('format')) {
       widgetType = schema['format'];
     } else if (schema.containsKey('enum') && (type != 'boolean' || type != 'null')) {
