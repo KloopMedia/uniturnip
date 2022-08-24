@@ -105,7 +105,7 @@ class ObjectBody extends StatelessWidget {
     List<dynamic> required = schema['required'] ?? [];
     String schemaType = newSchema['type'] ?? 'not_defined';
     if (schemaType == 'object' || schemaType == 'array') {
-      if (newUiSchema['ui:widget'] == "card") {
+      if (newSchema.containsKey('subtype') && newSchema['subtype'] == "card") {
         return JSONSchemaFinalLeaf(
           schema: newSchema,
           ui: newUiSchema,

@@ -26,6 +26,7 @@ class Schemas {
         },
         "card": {
           "type": "object",
+          "subtype": "card",
           "properties": {
             "newInput1": {"title": "New Input 1", "type": "string"},
             "newInput2": {
