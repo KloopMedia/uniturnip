@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -23,114 +27,92 @@ class _FileWidgetState extends State<FileWidget> {
   late final bool required = widget.widgetData.required;
   late final bool _multiPick;
   late final bool _private;
-  // final FileType _pickingType = FileType.any;
+  UploadTask? _uploadTask;
+
   bool _isLoading = false;
   List<PlatformFile>? _files;
+  Set<FileModel> files = {};
 
   @override
   void initState() {
+    print('FILE VALUE ${widget.widgetData.value}');
+    // _files = widget.widgetData.value;
     _multiPick = widget.widgetData.uiSchema['ui:options']?["multiple"] ?? false;
     _private = widget.widgetData.uiSchema['ui:options']?["private"] ?? false;
     super.initState();
   }
 
-  // void _pickFiles() async {
-  //   try {
-  //     var result = await FilePicker.platform.pickFiles(
-  //       type: _pickingType,
-  //       allowMultiple: _multiPick,
-  //     );
-  //     _files = result?.files;
-  //     var paths = result?.paths;
-  //     if (!mounted || paths == null) return;
-  //     var storagePath = await context.read<UIModel>().saveFile!(
-  //       paths,
-  //       private: _private,
-  //     );
-  //     widget.widgetData.onChange(widget.widgetData.path, storagePath);
-  //   } on PlatformException catch (e) {
-  //     _logException('Unsupported operation: $e');
-  //   } catch (e) {
-  //     _logException(e.toString());
-  //   }
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
-
-  void _pickImage() async {
+  void _pickFile(FileType type) async {
     try {
-      var result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: _multiPick,
+      final result = await FilePicker.platform.pickFiles(
+        type: type,
       );
       _files = result?.files;
       var paths = result?.paths;
       if (!mounted || paths == null) return;
-      var storagePath = await context.read<UIModel>().saveFile!(
-        paths,
-        FileType.image,
-        private: _private,
-      );
-      widget.widgetData.onChange(widget.widgetData.path, storagePath);
+      print(paths);
+      if (paths.isNotEmpty) {
+        for (var path in paths) {
+          var uploadTask = await context.read<UIModel>().saveFile!(
+            path!,
+            type,
+            private: _private,
+          );
+          print('PATH: ${uploadTask?.snapshot.ref.fullPath}');
+          setState(() {
+            _uploadTask = uploadTask;
+          });
+          final snapshot = await uploadTask!.whenComplete(() {});
+          final name = snapshot.ref.name;
+          final storagePath = snapshot.ref.fullPath;
+          setState(() {
+            files.add(FileModel(name: name, path: storagePath));
+          });
+          Map<String, dynamic> data;
+          var rawData = widget.widgetData.value;
+          if (rawData is String) {
+            var parsedData = json.decode(rawData);
+            data = {...parsedData, name: storagePath};
+          } else if (rawData is Map) {
+            data = {...rawData, name: storagePath};
+          } else {
+            data = {name: storagePath};
+          }
+          print("DATA: ${json.encode(data)}");
+          var encoded = json.encode(data);
+          widget.widgetData.onChange(widget.widgetData.path, encoded);
+        }
+      }
     } on PlatformException catch (e) {
       _logException('Unsupported operation: $e');
     } catch (e) {
       _logException(e.toString());
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
-  void _pickVideo() async {
+  void openFile(String path) async {
     try {
-      var result = await FilePicker.platform.pickFiles(
-        type: FileType.video,
-        allowMultiple: _multiPick,
-      );
-      _files = result?.files;
-      var paths = result?.paths;
-      if (!mounted || paths == null) return;
-      var storagePath = await context.read<UIModel>().saveFile!(
-        paths,
-        FileType.video,
-        private: _private,
-      );
-      widget.widgetData.onChange(widget.widgetData.path, storagePath);
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation: $e');
+      var file = await context.read<UIModel>().getFile!(path);
+      if (!mounted) return;
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return Scaffold(
+          body: GestureDetector(
+            child: Center(
+              child: Hero(
+                tag: 'imageHero',
+                child: Image.file(file),
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }));
     } catch (e) {
-      _logException(e.toString());
+      print(e);
+      rethrow;
     }
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void _pickDocument() async {
-    try {
-      var result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        allowMultiple: _multiPick,
-      );
-      _files = result?.files;
-      var paths = result?.paths;
-      if (!mounted || paths == null) return;
-      var storagePath = await context.read<UIModel>().saveFile!(
-        paths,
-        FileType.video,
-        private: _private,
-      );
-      widget.widgetData.onChange(widget.widgetData.path, storagePath);
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation: $e');
-    } catch (e) {
-      _logException(e.toString());
-    }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _clearCachedFiles() async {
@@ -192,66 +174,84 @@ class _FileWidgetState extends State<FileWidget> {
       description: description,
       required: required,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              IconButton(onPressed: () {
-                _pickImage();
-              }, icon: const Icon(Icons.image)),
-              IconButton(onPressed: () {
-                _pickVideo();
-              }, icon: const Icon(Icons.video_file)),
-              IconButton(onPressed: () {
-                _pickDocument();
-              }, icon: const Icon(Icons.insert_drive_file))
-            ],
-          ),
-          // ElevatedButton.icon(
-          //   onPressed: () => _pickFiles(),
-          //   icon: const Icon(Icons.upload),
-          //   label: const Text('Load file'),
-          // ),
-          Builder(
-            builder: (BuildContext context) {
-              if (_isLoading) {
-                return const CircularProgressIndicator();
-              } else if (_files != null) {
-                return Column(
-                  children: [
-                    ListTile(
-                      title: const Text('Files'),
-                      trailing: TextButton.icon(
-                        onPressed: () => _clearCachedFiles(),
-                        icon: const Icon(Icons.clear_all),
-                        label: const Text('Clear all'),
-                      ),
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) => ListTile(
-                        title: Text('File $index: ${_files![index].name}'),
-                        trailing: IconButton(
-                          onPressed: () => _removeFile(index),
-                          icon: const Icon(Icons.clear),
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                      ),
-                      separatorBuilder: (BuildContext context, int index) => const Divider(),
-                      itemCount: _files!.length,
-                    ),
-                  ],
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          )
+          FileSelectorButtonGroup(onSelect: _pickFile),
+          UploadProgress(task: _uploadTask),
+          for (var file in files) Text(file.name)
         ],
       ),
+    );
+  }
+}
+
+class UploadProgress extends StatelessWidget {
+  final UploadTask? task;
+
+  const UploadProgress({Key? key, required this.task}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (task == null) return const SizedBox.shrink();
+
+    return StreamBuilder<TaskSnapshot>(
+      stream: task!.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final snap = snapshot.data!;
+          final progress = snap.bytesTransferred / snap.totalBytes;
+          // return Text('$progress');
+          return Row(
+            children: [
+              Text(snap.ref.name),
+              Expanded(child: LinearProgressIndicator(value: progress)),
+              Text('${progress.toInt() * 100}'),
+            ],
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+}
+
+class FileModel {
+  String name;
+  String? path;
+  String? url;
+
+  FileModel({
+    required this.name,
+    this.path,
+    this.url,
+  });
+}
+
+class FileSelectorButtonGroup extends StatelessWidget {
+  final void Function(FileType type) onSelect;
+
+  const FileSelectorButtonGroup({Key? key, required this.onSelect}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+            onPressed: () {
+              onSelect(FileType.image);
+            },
+            icon: const Icon(Icons.image)),
+        IconButton(
+            onPressed: () {
+              onSelect(FileType.video);
+            },
+            icon: const Icon(Icons.video_file)),
+        IconButton(
+            onPressed: () {
+              onSelect(FileType.any);
+            },
+            icon: const Icon(Icons.insert_drive_file))
+      ],
     );
   }
 }
