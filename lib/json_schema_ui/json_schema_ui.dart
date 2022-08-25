@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/fields/object_field.dart';
@@ -16,7 +19,9 @@ typedef SubmitCallback = void Function({
 
 typedef SaveAudioRecordCallback = Future<String> Function(String filepath);
 
-typedef FileCallback = Future<String> Function(List<String?> paths, FileType type, {bool private});
+typedef UploadFileCallback = Future<UploadTask?> Function(String path, FileType type,
+    {bool private});
+typedef GetFileCallback = Future<File> Function(String path);
 
 class JSONSchemaUI extends StatelessWidget {
   final Map<String, dynamic> schema;
@@ -25,7 +30,8 @@ class JSONSchemaUI extends StatelessWidget {
   final ChangeCallback? onUpdate;
   final SubmitCallback? onSubmit;
   final SaveAudioRecordCallback? saveAudioRecord;
-  final FileCallback? saveFile;
+  final UploadFileCallback? saveFile;
+  final GetFileCallback? getFile;
   final UIModel _formController;
   final bool hideSubmitButton;
 
@@ -40,12 +46,14 @@ class JSONSchemaUI extends StatelessWidget {
     this.saveFile,
     this.hideSubmitButton = false,
     UIModel? formController,
+    this.getFile,
   })  : _formController = formController ??
             UIModel(
               data: data,
               onUpdate: onUpdate,
               saveAudioRecord: saveAudioRecord,
               saveFile: saveFile,
+              getFile: getFile,
             ),
         super(key: key);
 
@@ -94,15 +102,6 @@ class JSONSchemaUI extends StatelessWidget {
                       "Submit",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    // style: ButtonStyle(
-                    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    //         RoundedRectangleBorder(
-                    //             borderRadius: BorderRadius.circular(18.0),
-                    //             side: BorderSide(
-                    //                 color: Theme.of(context)
-                    //                     .colorScheme
-                    //                     .copyWith()
-                    //                     .primary)))),
                   ),
                 );
               })

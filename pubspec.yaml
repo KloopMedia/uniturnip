@@ -38,8 +38,10 @@ dependencies:
   permission_handler: ^9.2.0
   form_field_validator: ^1.1.0
   audio_recorder:
+#    path: ../audio_recorder
     git:
       url: https://github.com/KloopMedia/audio_recorder.git
+  firebase_storage: ^10.3.6
 
 dev_dependencies:
   flutter_test:
