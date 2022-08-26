@@ -13,6 +13,7 @@ class CheckboxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
+        activeColor: Colors.black,
         contentPadding: EdgeInsets.zero,
         controlAffinity: ListTileControlAffinity.leading,
         autofocus: widgetData.autofocus,

@@ -24,6 +24,7 @@ class CheckboxesWidget extends StatelessWidget {
         children: [
           for (var item in items)
             CheckboxListTile(
+              activeColor: Colors.black,
               controlAffinity: ListTileControlAffinity.leading,
               autofocus: widgetData.autofocus,
               title: Text(item),

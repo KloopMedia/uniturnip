@@ -55,6 +55,8 @@ class _EmailWidgetState extends State<EmailWidget> {
         decoration: const InputDecoration(
           hintText: 'Email',
           border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
         ),
         keyboardType: TextInputType.emailAddress,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),

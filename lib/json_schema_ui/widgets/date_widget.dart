@@ -71,6 +71,8 @@ class _DateWidgetState extends State<DateWidget> {
         onTap: () => _selectDate(context),
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
+          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
           suffixIcon: IconButton(
             onPressed: () => _selectDate(context),
             icon: const Icon(Icons.calendar_today),

@@ -49,9 +49,11 @@ class RadioWidget extends StatelessWidget {
         children: [
           for (int index = 0; index < items.length; index++)
             RadioListTile(
+              activeColor: Colors.black,
               title: Text(
                 _getName(items, names, index),
-                style: Theme.of(context).textTheme.titleSmall,
+                style: const TextStyle(fontFamily: 'Open-Sans', fontWeight: FontWeight.w400, fontSize: 18),
+                // style: Theme.of(context).textTheme.titleSmall,
                 // style: Theme.of(context).textTheme.titleMedium,
               ),
               value: items[index],

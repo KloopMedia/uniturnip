@@ -44,7 +44,7 @@ class _CardWidgetState extends State<CardWidget> {
       const SizedBox(width: 10.0),
       Container(
           padding: const EdgeInsets.all(4.0),
-          color: Colors.blueGrey,
+          color: const Color.fromRGBO(69, 123, 157, 1),
           child: IconButton(
               icon: const Icon(Icons.arrow_forward, color: Colors.white),
               onPressed: () {
@@ -130,7 +130,7 @@ class Cards extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       alignment: Alignment.center,
       width: 300.0,
-      color: Colors.blueGrey,
+      color: const Color.fromRGBO(168, 210, 219, 1),
       child: hasCardFields
           ? ListView.builder(
               shrinkWrap: true,

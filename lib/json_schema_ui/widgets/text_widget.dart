@@ -59,7 +59,11 @@ class _TextWidgetState extends State<TextWidget> {
                 errorText: 'Please enter a text',
               ),
               controller: textEditingController,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+              ),
               focusNode: focusNode,
               onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
               onFieldSubmitted: (String value) {
@@ -98,6 +102,8 @@ class _TextWidgetState extends State<TextWidget> {
         readOnly: widget.widgetData.readonly,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
         ),
       ),
     );

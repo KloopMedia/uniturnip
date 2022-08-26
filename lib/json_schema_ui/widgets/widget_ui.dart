@@ -22,7 +22,7 @@ class WidgetUI extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.zero,
           title: title.isNotEmpty
-              ? Text(required ? '$title*' : title, style: Theme.of(context).textTheme.titleSmall)
+              ? Text(required ? '$title*' : title, style: const TextStyle(fontFamily: 'Open-Sans', fontWeight: FontWeight.w400, fontSize: 21)) //style: Theme.of(context).textTheme.titleSmall)
               : null,
           subtitle: description.isNotEmpty ? Text(description) : null,
         ),
