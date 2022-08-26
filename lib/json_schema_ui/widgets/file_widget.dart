@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:uniturnip/json_schema_ui/models/file_model.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
@@ -21,22 +21,57 @@ class FileWidget extends StatefulWidget {
 }
 
 class _FileWidgetState extends State<FileWidget> {
-  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   late final String title = widget.widgetData.title;
   late final String description = widget.widgetData.description;
   late final bool required = widget.widgetData.required;
   late final bool _multiPick;
   late final bool _private;
   UploadTask? _uploadTask;
+  late Map<String, dynamic> value;
 
-  bool _isLoading = false;
-  List<PlatformFile>? _files;
-  Set<FileModel> files = {};
+  List<FileModel> _files = [];
+
+  Map<String, dynamic> _parseValue(dynamic rawData) {
+    if (rawData is String) {
+      var parsedData = json.decode(rawData);
+      return {...parsedData};
+    } else if (rawData is Map) {
+      return {...rawData};
+    } else {
+      return {};
+    }
+  }
+
+  List<FileModel> _getDistinctFiles(files) {
+    var seen = <String>{};
+    return files.where((file) => seen.add(file.name)).toList();
+  }
+
+  void _encodeAndSave(Map<String, dynamic> value) {
+    // Convert Map to JSON
+    var encoded = json.encode(value);
+    // Save new value in formData
+    widget.widgetData.onChange(widget.widgetData.path, encoded);
+  }
+
+  void _showSnackBar(String content) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content, textAlign: TextAlign.center),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
 
   @override
   void initState() {
-    print('FILE VALUE ${widget.widgetData.value}');
-    // _files = widget.widgetData.value;
+    value = _parseValue(widget.widgetData.value);
+    if (value.keys.isNotEmpty) {
+      for (var file in value.entries) {
+        _files.add(FileModel(name: file.key, path: file.value));
+      }
+      setState(() {});
+    }
     _multiPick = widget.widgetData.uiSchema['ui:options']?["multiple"] ?? false;
     _private = widget.widgetData.uiSchema['ui:options']?["private"] ?? false;
     super.initState();
@@ -44,49 +79,41 @@ class _FileWidgetState extends State<FileWidget> {
 
   void _pickFile(FileType type) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: type,
-      );
-      _files = result?.files;
+      final result = await FilePicker.platform.pickFiles(type: type);
       var paths = result?.paths;
-      if (!mounted || paths == null) return;
-      print(paths);
-      if (paths.isNotEmpty) {
-        for (var path in paths) {
-          var uploadTask = await context.read<UIModel>().saveFile!(
-            path!,
-            type,
-            private: _private,
-          );
-          print('PATH: ${uploadTask?.snapshot.ref.fullPath}');
-          setState(() {
-            _uploadTask = uploadTask;
-          });
-          final snapshot = await uploadTask!.whenComplete(() {});
-          final name = snapshot.ref.name;
-          final storagePath = snapshot.ref.fullPath;
-          setState(() {
-            files.add(FileModel(name: name, path: storagePath));
-          });
-          Map<String, dynamic> data;
-          var rawData = widget.widgetData.value;
-          if (rawData is String) {
-            var parsedData = json.decode(rawData);
-            data = {...parsedData, name: storagePath};
-          } else if (rawData is Map) {
-            data = {...rawData, name: storagePath};
-          } else {
-            data = {name: storagePath};
-          }
-          print("DATA: ${json.encode(data)}");
-          var encoded = json.encode(data);
-          widget.widgetData.onChange(widget.widgetData.path, encoded);
-        }
+      if (!mounted || paths == null || paths.isEmpty) return;
+
+      for (var path in paths) {
+        var uploadTask = await context.read<UIModel>().saveFile!(
+          path!,
+          type,
+          private: _private,
+        );
+
+        setState(() {
+          _uploadTask = uploadTask;
+        });
+
+        // When upload is finished get filename and firebase storage path
+        final snapshot = await uploadTask!.whenComplete(() {});
+        final name = snapshot.ref.name;
+        final storagePath = snapshot.ref.fullPath;
+
+        // Add file to preview list
+        final files = [..._files, FileModel(name: name, path: storagePath, type: type)];
+        final distinctFiles = _getDistinctFiles(files);
+        setState(() {
+          _files = distinctFiles;
+        });
+
+        // Make a copy of value and add new file entry
+        var formData = {...value, name: storagePath};
+        _encodeAndSave(formData);
       }
     } on PlatformException catch (e) {
-      _logException('Unsupported operation: $e');
+      print(e);
     } catch (e) {
-      _logException(e.toString());
+      print(e);
     }
   }
 
@@ -98,10 +125,18 @@ class _FileWidgetState extends State<FileWidget> {
         return Scaffold(
           body: GestureDetector(
             child: Center(
-              child: Hero(
-                tag: 'imageHero',
-                child: Image.file(file),
-              ),
+              child: Builder(builder: (context) {
+                final url = file.url;
+                if (url != null) {
+                  if (file.type == FileType.image) {
+                    return Hero(
+                      tag: 'imageHero',
+                      child: Image.network(url),
+                    );
+                  }
+                }
+                return const SizedBox.shrink();
+              }),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -115,55 +150,15 @@ class _FileWidgetState extends State<FileWidget> {
     }
   }
 
-  void _clearCachedFiles() async {
-    _resetState();
-    try {
-      bool? result = await FilePicker.platform.clearTemporaryFiles();
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: result! ? Colors.green : Colors.red,
-          content: Text((result
-              ? 'Temporary files removed with success.'
-              : 'Failed to clean temporary files')),
-        ),
-      );
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  void _removeFile(int index) {
-    if (_files != null) {
-      var paths = _files!.toList();
-      var removedFile = paths.removeAt(index);
-      setState(() {
-        _files = paths;
-      });
-      _logException('Removed file: ${removedFile.name}');
-    }
-  }
-
-  void _logException(String message) {
-    _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-    _scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
-
-  void _resetState() {
-    if (!mounted) {
-      return;
-    }
+  void _removeFile(String name) {
+    var files = [..._files];
+    var val = {...value};
+    files.removeWhere((element) => element.name == name);
+    val.remove(name);
+    _encodeAndSave(val);
     setState(() {
-      _isLoading = true;
-      _files = null;
+      _files = files;
+      value = val;
     });
   }
 
@@ -177,7 +172,21 @@ class _FileWidgetState extends State<FileWidget> {
         children: [
           FileSelectorButtonGroup(onSelect: _pickFile),
           UploadProgress(task: _uploadTask),
-          for (var file in files) Text(file.name)
+          for (var file in _files)
+            FileControlButtonGroup(
+              name: file.name,
+              onRemove: () {
+                _removeFile(file.name);
+              },
+              onPreview: () {
+                openFile(file.path);
+              },
+              onCopy: () {
+                Clipboard.setData(ClipboardData(text: file.path)).then((_) {
+                  _showSnackBar("Path copied!");
+                });
+              },
+            )
         ],
       ),
     );
@@ -199,10 +208,13 @@ class UploadProgress extends StatelessWidget {
         if (snapshot.hasData) {
           final snap = snapshot.data!;
           final progress = snap.bytesTransferred / snap.totalBytes;
-          // return Text('$progress');
           return Row(
             children: [
-              Text(snap.ref.name),
+              Text(
+                snap.ref.name,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
               Expanded(child: LinearProgressIndicator(value: progress)),
               Text('${progress.toInt() * 100}'),
             ],
@@ -215,18 +227,6 @@ class UploadProgress extends StatelessWidget {
   }
 }
 
-class FileModel {
-  String name;
-  String? path;
-  String? url;
-
-  FileModel({
-    required this.name,
-    this.path,
-    this.url,
-  });
-}
-
 class FileSelectorButtonGroup extends StatelessWidget {
   final void Function(FileType type) onSelect;
 
@@ -237,20 +237,50 @@ class FileSelectorButtonGroup extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-            onPressed: () {
-              onSelect(FileType.image);
-            },
-            icon: const Icon(Icons.image)),
+          onPressed: () {
+            onSelect(FileType.image);
+          },
+          icon: const Icon(Icons.image),
+        ),
         IconButton(
-            onPressed: () {
-              onSelect(FileType.video);
-            },
-            icon: const Icon(Icons.video_file)),
+          onPressed: () {
+            onSelect(FileType.video);
+          },
+          icon: const Icon(Icons.video_file),
+        ),
         IconButton(
-            onPressed: () {
-              onSelect(FileType.any);
-            },
-            icon: const Icon(Icons.insert_drive_file))
+          onPressed: () {
+            onSelect(FileType.any);
+          },
+          icon: const Icon(Icons.insert_drive_file),
+        )
+      ],
+    );
+  }
+}
+
+class FileControlButtonGroup extends StatelessWidget {
+  final String name;
+  final void Function() onRemove;
+  final void Function() onPreview;
+  final void Function() onCopy;
+
+  const FileControlButtonGroup({
+    Key? key,
+    required this.name,
+    required this.onRemove,
+    required this.onPreview,
+    required this.onCopy,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
+        IconButton(onPressed: onPreview, icon: const Icon(Icons.visibility)),
+        IconButton(onPressed: onRemove, icon: const Icon(Icons.delete)),
+        IconButton(onPressed: onCopy, icon: const Icon(Icons.copy)),
       ],
     );
   }
