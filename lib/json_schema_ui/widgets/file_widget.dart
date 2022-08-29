@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/models/file_model.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+import 'package:video_player/video_player.dart';
 
 import 'widget_ui.dart';
 
@@ -121,29 +124,34 @@ class _FileWidgetState extends State<FileWidget> {
     try {
       var file = await context.read<UIModel>().getFile!(path);
       if (!mounted) return;
-      Navigator.push(context, MaterialPageRoute(builder: (_) {
-        return Scaffold(
-          body: GestureDetector(
-            child: Center(
-              child: Builder(builder: (context) {
-                final url = file.url;
-                if (url != null) {
-                  if (file.type == FileType.image) {
-                    return Hero(
-                      tag: 'imageHero',
-                      child: Image.network(url),
-                    );
-                  }
-                }
-                return const SizedBox.shrink();
-              }),
-            ),
-            onTap: () {
-              Navigator.pop(context);
+      Navigator.push(
+          context,
+          DialogRoute(
+            context: context,
+            builder: (_) {
+              return Center(
+                child: Dismissible(
+                  key: const Key("file-preview"),
+                  direction: DismissDirection.vertical,
+                  onDismissed: (_) {
+                    Navigator.of(context).pop();
+                  },
+                  child: Builder(builder: (context) {
+                    final url = file.url;
+                    if (url == null) {
+                      return const SizedBox.shrink();
+                    }
+                    if (file.type == FileType.image) {
+                      return ImageViewerWidget(url: url);
+                    } else if (file.type == FileType.video) {
+                      return VideoPlayerWidget(url: url);
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                ),
+              );
             },
-          ),
-        );
-      }));
+          ));
     } catch (e) {
       print(e);
       rethrow;
@@ -283,5 +291,76 @@ class FileControlButtonGroup extends StatelessWidget {
         IconButton(onPressed: onCopy, icon: const Icon(Icons.copy)),
       ],
     );
+  }
+}
+
+class ImageViewerWidget extends StatelessWidget {
+  final String url;
+
+  const ImageViewerWidget({Key? key, required this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(backgroundColor: Colors.black),
+      body: Center(
+        child: CachedNetworkImage(
+          imageUrl: url,
+          progressIndicatorBuilder: (context, url, downloadProgress) =>
+              CircularProgressIndicator(value: downloadProgress.progress),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+      ),
+    );
+  }
+}
+
+class VideoPlayerWidget extends StatefulWidget {
+  final String url;
+
+  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
+
+  @override
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+  late VideoPlayerController videoPlayerController;
+  late ChewieController chewieController;
+
+  @override
+  void initState() {
+    super.initState();
+    videoPlayerController = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
+        chewieController = ChewieController(
+          videoPlayerController: videoPlayerController,
+          autoPlay: true,
+        );
+        setState(() {});
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (videoPlayerController.value.isInitialized) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+        ),
+        body: Chewie(controller: chewieController),
+      );
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    videoPlayerController.dispose();
+    chewieController.dispose();
   }
 }
