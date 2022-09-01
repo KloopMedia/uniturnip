@@ -13,7 +13,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "2591fb2a66a45e595bd6de4926dd9daa9cdbcb63"
+      resolved-ref: "3f7cc5c095ca7b4e671a09c806d58267ce8aa920"
       url: "https://github.com/KloopMedia/audio_recorder.git"
     source: git
     version: "0.0.1"

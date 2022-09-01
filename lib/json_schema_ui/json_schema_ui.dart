@@ -15,7 +15,7 @@ typedef SubmitCallback = void Function({
   required Map<String, dynamic> data,
 });
 
-typedef SaveAudioRecordCallback = Future<String> Function(String filepath);
+typedef SaveAudioRecordCallback = Future<String> Function(String filepath, bool private);
 
 typedef UploadFileCallback = Future<UploadTask?> Function(String path, FileType type,
     {bool private});
