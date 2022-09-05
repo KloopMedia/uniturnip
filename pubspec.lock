@@ -8,17 +8,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
-  audio_recorder:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3f7cc5c095ca7b4e671a09c806d58267ce8aa920"
-      url: "https://github.com/KloopMedia/audio_recorder.git"
-    source: git
-    version: "0.0.1"
   audio_session:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: audio_session
       url: "https://pub.dartlang.org"
@@ -212,7 +203,7 @@ packages:
     source: hosted
     version: "2.0.7"
   flutter_sound:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_sound
       url: "https://pub.dartlang.org"
@@ -271,7 +262,7 @@ packages:
     source: hosted
     version: "4.0.1"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -292,7 +283,7 @@ packages:
     source: hosted
     version: "2.0.0"
   logger:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logger
       url: "https://pub.dartlang.org"
@@ -341,7 +332,7 @@ packages:
     source: hosted
     version: "1.8.1"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
@@ -647,5 +638,5 @@ packages:
     source: hosted
     version: "0.2.0+1"
 sdks:
-  dart: ">=2.17.5 <3.0.0"
+  dart: ">=2.17.0 <3.0.0"
   flutter: ">=3.0.0"

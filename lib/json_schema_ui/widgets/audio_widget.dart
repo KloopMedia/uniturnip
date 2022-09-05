@@ -1,8 +1,8 @@
-import 'package:audio_recorder/audio_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+import 'package:uniturnip/json_schema_ui/utilities/audio_recorder.dart';
 import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 
 class AudioWidget extends StatefulWidget {
