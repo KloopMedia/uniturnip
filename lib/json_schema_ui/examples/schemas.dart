@@ -1,4 +1,44 @@
 class Schemas {
+  static const Map<String, dynamic> testEditor = {
+  "schema": {
+    "type": "object",
+    "properties": {
+      "editor":{
+        "type" :"string",
+        "default":
+  ///аудио
+        "<tr>"
+            "<td style='width: 31.9636%; text-align: center;'><span style='font-family: helvetica, arial, sans-serif; color: #000000;'><strong style='font-size: 32px;'>(P)</strong></span></td>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-family: helvetica, arial, sans-serif; color: #3598db;'><strong style='font-size: 32px;'><span style='color: #000000;'>(</span>п<span style='color: #000000;'>)</span></strong></span></td>"
+  "<td style='width: 31.9672%; text-align: center;'><audio src='https://storage.googleapis.com/media_journal_bucket/E4K/p(%D0%BF).mp3' controls='controls'></audio></td>"
+  "</tr>"
+  "<tr>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-size: 24pt; font-family: helvetica, arial, sans-serif; color: #000000;'><strong>(N)</strong></span></td>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-family: helvetica, arial, sans-serif; color: #3598db;'><strong style='font-size: 32px;'><span style='color: #000000;'>(</span>н<span style='color: #000000;'>)</span></strong></span></td>"
+  "<td style='width: 31.9672%; text-align: center;'><audio src='https://storage.googleapis.com/media_journal_bucket/E4K/N.mp3' controls='controls'></audio></td>"
+  "</tr>"
+  "<tr>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-size: 24pt; font-family: helvetica, arial, sans-serif; color: #000000;'><strong>(E)</strong><strong><br /></strong></span></td>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-family: helvetica, arial, sans-serif; color: #3598db;'><strong style='font-size: 32px;'><span style='color: #000000;'>(</span>э<span style='color: #000000;'>)</span></strong></span></td>"
+  "<td style='width: 31.9672%; text-align: center;'><audio src='https://storage.googleapis.com/media_journal_bucket/E4K/e(%D1%8D).mp3' controls='controls'></audio></td>"
+  "</tr>"
+  "<tr>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-size: 24pt; font-family: helvetica, arial, sans-serif; color: #000000;'><strong>(S)</strong><strong><br /></strong></span></td>"
+  "<td style='width: 31.9636%; text-align: center;'><span style='font-family: helvetica, arial, sans-serif; color: #3598db;'><strong style='font-size: 32px;'><span style='color: #000000;'>(</span>с<span style='color: #000000;'>)</span></strong></span></td>"
+  "<td style='width: 31.9672%; text-align: center;'><audio src='https://storage.googleapis.com/media_journal_bucket/E4K/s(%D1%81.mp3' controls='controls'></audio></td>"
+        "</tr>"
+      }
+    }
+  },
+  "ui":{
+    "editor":{
+      "ui:widget":"editor",
+      "ui:disabled": true,
+      "ui:readonly": true
+    }
+  }
+};
+
   static const Map<String, dynamic> test = {
     "label": "Simple",
     "schema": {
@@ -1553,6 +1593,7 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
+    testEditor,
     simple,
     nested,
     arrays,

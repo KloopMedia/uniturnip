@@ -43,6 +43,7 @@ dependencies:
       url: https://github.com/KloopMedia/audio_recorder.git
   html_editor_enhanced: ^2.5.0
   flutter_html: ^2.2.1
+  just_audio: ^0.9.28
 
 dependency_overrides:
   flutter_colorpicker: ^1.0.3
