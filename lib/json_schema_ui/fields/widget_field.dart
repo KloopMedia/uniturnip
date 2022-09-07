@@ -61,8 +61,8 @@ class WidgetField extends StatelessWidget {
         return NullWidget(widgetData: widgetData);
       case 'reader':
         return ReaderWidget(widgetData: widgetData);
-      case 'card':
-        return CardWidget(widgetData: widgetData);
+      // case 'card':
+      //   return CardWidget(widgetData: widgetData);
       default:
         return TextWidget(widgetData: widgetData);
     }

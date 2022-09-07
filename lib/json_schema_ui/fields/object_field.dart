@@ -3,6 +3,7 @@ import 'package:uniturnip/json_schema_ui/fields/json_schema_dependency.dart';
 import 'package:uniturnip/json_schema_ui/fields/json_schema_leaf.dart';
 import 'package:uniturnip/json_schema_ui/models/mapPath.dart';
 import 'package:uniturnip/json_schema_ui/utils.dart';
+import 'package:uniturnip/json_schema_ui/widgets.dart';
 import 'package:uniturnip/json_schema_ui/widgets/array_buttons.dart';
 
 class JSONSchemaUIField extends StatelessWidget {
@@ -21,6 +22,13 @@ class JSONSchemaUIField extends StatelessWidget {
   })  : path = Utils.getPath(path, pointer, schema),
         super(key: key);
 
+  Widget buildObjectBody(List fields) {
+    for (String field in fields) {
+      return ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled);
+    }
+    return const SizedBox.shrink();
+  }
+
   @override
   Widget build(BuildContext context) {
     List fields = Utils().retrieveSchemaFields(
@@ -36,6 +44,10 @@ class JSONSchemaUIField extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final List cardFields = schema['properties']['card']['properties'].keys.toList() ?? [];
+    final Map cardFieldSchema = schema['properties']['card']['properties'][cardFields[0]] ?? {};
+    final MapPath cardPath = Utils.getPath(path, 'card', schema['properties']['card']);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,8 +55,11 @@ class JSONSchemaUIField extends StatelessWidget {
         if (path.isLastObject() || path.isLastArray())
           ObjectHeader(title: title, description: description),
         // TODO: Find out if there are any difference between for loop and listview in terms of optimization
-        for (String field in fields)
-          ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
+
+        (cardFieldSchema.containsKey('subtype'))
+            ? CardWidget(schema: schema['properties']['card'], uiSchema: ui['card'], path: cardPath)
+            : buildObjectBody(fields),
+
         if (path.isLastArray()) ArrayPanel(path),
       ].map((e) => Padding(
           padding: const EdgeInsets.all(3),
@@ -105,6 +120,7 @@ class ObjectBody extends StatelessWidget {
     List<dynamic> required = schema['required'] ?? [];
     String schemaType = newSchema['type'] ?? 'not_defined';
     if (schemaType == 'object' || schemaType == 'array') {
+/*
       if (newSchema.containsKey('subtype') && newSchema['subtype'] == "card") {
         return JSONSchemaFinalLeaf(
           schema: newSchema,
@@ -115,6 +131,7 @@ class ObjectBody extends StatelessWidget {
           disabled: disabled,
         );
       }
+*/
       // TODO: Add FixedItemsList handling
       // https://rjsf-team.github.io/react-jsonschema-form/#eyJmb3JtRGF0YSI6eyJsaXN0T2ZTdHJpbmdzIjpbImZvbyIsImJhciJdLCJtdWx0aXBsZUNob2ljZXNMaXN0IjpbImZvbyIsImJhciJdLCJmaXhlZEl0ZW1zTGlzdCI6WyJTb21lIHRleHQiLHRydWUsMTIzXSwibWluSXRlbXNMaXN0IjpbeyJuYW1lIjoiRGVmYXVsdCBuYW1lIn0seyJuYW1lIjoiRGVmYXVsdCBuYW1lIn0seyJuYW1lIjoiRGVmYXVsdCBuYW1lIn1dLCJkZWZhdWx0c0FuZE1pbkl0ZW1zIjpbImNhcnAiLCJ0cm91dCIsImJyZWFtIiwidW5pZGVudGlmaWVkIiwidW5pZGVudGlmaWVkIl0sIm5lc3RlZExpc3QiOltbImxvcmVtIiwiaXBzdW0iXSxbImRvbG9yIl1dLCJ1bm9yZGVyYWJsZSI6WyJvbmUiLCJ0d28iXSwidW5yZW1vdmFibGUiOlsib25lIiwidHdvIl0sIm5vVG9vbGJhciI6WyJvbmUiLCJ0d28iXSwiZml4ZWROb1Rvb2xiYXIiOls0Mix0cnVlLCJhZGRpdGlvbmFsIGl0ZW0gb25lIiwiYWRkaXRpb25hbCBpdGVtIHR3byJdfSwic2NoZW1hIjp7InR5cGUiOiJvYmplY3QiLCJwcm9wZXJ0aWVzIjp7ImZpeGVkSXRlbXNMaXN0Ijp7InR5cGUiOiJhcnJheSIsInRpdGxlIjoiQSBsaXN0IG9mIGZpeGVkIGl0ZW1zIiwiaXRlbXMiOlt7InRpdGxlIjoiQSBzdHJpbmcgdmFsdWUiLCJ0eXBlIjoic3RyaW5nIiwiZGVmYXVsdCI6ImxvcmVtIGlwc3VtIn0seyJ0aXRsZSI6ImEgYm9vbGVhbiB2YWx1ZSIsInR5cGUiOiJib29sZWFuIn1dLCJhZGRpdGlvbmFsSXRlbXMiOnsidGl0bGUiOiJBZGRpdGlvbmFsIGl0ZW0iLCJ0eXBlIjoibnVtYmVyIn19fX0sInVpU2NoZW1hIjp7Imxpc3RPZlN0cmluZ3MiOnsiaXRlbXMiOnsidWk6ZW1wdHlWYWx1ZSI6IiJ9fSwibXVsdGlwbGVDaG9pY2VzTGlzdCI6eyJ1aTp3aWRnZXQiOiJjaGVja2JveGVzIn0sImZpeGVkSXRlbXNMaXN0Ijp7Iml0ZW1zIjpbeyJ1aTp3aWRnZXQiOiJ0ZXh0YXJlYSJ9LHsidWk6d2lkZ2V0Ijoic2VsZWN0In1dLCJhZGRpdGlvbmFsSXRlbXMiOnsidWk6d2lkZ2V0IjoidXBkb3duIn19LCJ1bm9yZGVyYWJsZSI6eyJ1aTpvcHRpb25zIjp7Im9yZGVyYWJsZSI6ZmFsc2V9fSwidW5yZW1vdmFibGUiOnsidWk6b3B0aW9ucyI6eyJyZW1vdmFibGUiOmZhbHNlfX0sIm5vVG9vbGJhciI6eyJ1aTpvcHRpb25zIjp7ImFkZGFibGUiOmZhbHNlLCJvcmRlcmFibGUiOmZhbHNlLCJyZW1vdmFibGUiOmZhbHNlfX0sImZpeGVkTm9Ub29sYmFyIjp7InVpOm9wdGlvbnMiOnsiYWRkYWJsZSI6ZmFsc2UsIm9yZGVyYWJsZSI6ZmFsc2UsInJlbW92YWJsZSI6ZmFsc2V9fX0sInRoZW1lIjoiZGVmYXVsdCIsImxpdmVTZXR0aW5ncyI6eyJ2YWxpZGF0ZSI6ZmFsc2UsImRpc2FibGUiOmZhbHNlLCJyZWFkb25seSI6ZmFsc2UsIm9taXRFeHRyYURhdGEiOmZhbHNlLCJsaXZlT21pdCI6ZmFsc2V9fQ==
       if (newSchema['items'] != null && newSchema['items']['enum'] != null) {
