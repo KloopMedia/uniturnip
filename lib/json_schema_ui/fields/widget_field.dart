@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 import 'package:uniturnip/json_schema_ui/widgets.dart';
+import '../widgets/customlink_widget.dart';
 
 class WidgetField extends StatelessWidget {
   final String widgetType;
@@ -21,6 +22,8 @@ class WidgetField extends StatelessWidget {
         return CheckboxWidget(widgetData: widgetData);
       case 'checkboxes':
         return CheckboxesWidget(widgetData: widgetData);
+      case 'customlink':
+        return CustomlinkWidget(widgetData: widgetData);
       case 'radio':
         return RadioWidget(widgetData: widgetData);
       case 'select':
