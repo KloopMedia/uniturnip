@@ -1,4 +1,25 @@
 class Schemas {
+  static const Map<String, dynamic> link = {
+    "label": "Simple",
+    "schema": {
+      "type": "object",
+      "title": "Онлайн жолугушууга жазылуу / Запись на онлайн прием",
+      "properties": {
+        "instruction_link": {
+          "title":
+              "Эгер сизге форманы толтурууда жардам керек болсо, анда бул шилтемени басыңыз: / Если вам нужна помощь с заполнением формы, то нажмите на эту ссылку:",
+          "type": "string",
+          "default": "https://taplink.cc/koldonmo"
+        },
+      }
+    },
+    "ui": {
+      "instruction_link": {
+        "ui:widget": "customlink"
+      },
+    }
+  };
+
   static const Map<String, dynamic> test = {
     "label": "Simple",
     "schema": {
@@ -1475,6 +1496,7 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
+    link,
     test,
     simple,
     nested,
