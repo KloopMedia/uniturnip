@@ -1,25 +1,4 @@
 class Schemas {
-  static const Map<String, dynamic> link = {
-    "label": "Simple",
-    "schema": {
-      "type": "object",
-      "title": "Онлайн жолугушууга жазылуу / Запись на онлайн прием",
-      "properties": {
-        "instruction_link": {
-          "title":
-              "Эгер сизге форманы толтурууда жардам керек болсо, анда бул шилтемени басыңыз: / Если вам нужна помощь с заполнением формы, то нажмите на эту ссылку:",
-          "type": "string",
-          "default": "https://taplink.cc/koldonmo"
-        },
-      }
-    },
-    "ui": {
-      "instruction_link": {
-        "ui:widget": "customlink"
-      },
-    }
-  };
-
   static const Map<String, dynamic> test = {
     "label": "Simple",
     "schema": {
@@ -46,11 +25,11 @@ class Schemas {
           }
         },
         "card": {
+          "subtype": "card",
           "type": "object",
           "description": "Playground",
           "properties": {
             "q_1": {
-              "subtype": "card",
               "title": "Pancakes",
               "type": "object",
               "properties": {
@@ -87,7 +66,6 @@ class Schemas {
               "required": []
             },
             "q_2": {
-              "subtype": "card",
               "title": "Waffles",
               "type": "object",
               "properties": {
@@ -104,6 +82,28 @@ class Schemas {
                     "bad",
                     "tasty"
                   ]
+                }
+              },
+              "dependencies": {},
+              "required": []
+            },
+            "q_3": {
+              "title": "Waffles",
+              "type": "object",
+              "properties": {
+                "3_1": {
+                  "title": "String field",
+                  "type": "string"
+                },
+                "3_2": {
+                  "type": "boolean",
+                  "title": "checkbox (default)",
+                  "description": "This is the checkbox-description"
+                },
+                "3_3": {
+                  "type": "boolean",
+                  "title": "select box",
+                  "description": "This is the select-description"
                 }
               },
               "dependencies": {},
@@ -138,9 +138,20 @@ class Schemas {
             "2_1"
           ]
         },
+        "q_3": {
+          "3_3": {
+            "ui:widget": "select"
+          },
+          "ui:order": [
+            "3_1",
+            "3_2",
+            "3_3"
+          ]
+        },
         "ui:order": [
           "q_1",
-          "q_2"
+          "q_2",
+          "q_3"
         ]
       }
     },
@@ -1543,7 +1554,6 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
-    link,
     test,
     simple,
     nested,
