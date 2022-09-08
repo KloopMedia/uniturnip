@@ -12,57 +12,33 @@ class Schemas {
           "items": {
             "type": "object",
             "properties": {
-              "word": {
-                "default": "Some word",
-                "type": "string",
-                "readOnly": true
-              },
-              "translation": {
-                "default": "Какое-то слово",
-                "type": "string",
-                "readOnly": true
-              },
+              "word": {"default": "Some word", "type": "string", "readOnly": true},
+              "translation": {"default": "Какое-то слово", "type": "string", "readOnly": true},
               "count": {
                 "title": "Кол-во нажатий",
                 "default": 0,
                 "type": "integer",
                 "readOnly": true
               },
-              "active": {
-                "title": "Активен",
-                "type": "boolean"
-              }
+              "active": {"title": "Активен", "type": "boolean"}
             }
           }
         },
-        "card":{
+        "card": {
           "type": "object",
+          "subtype": "card",
           "properties": {
-            "newInput1": {
-              "title":"New Input 1",
-              "type": "string"
-            },
+            "newInput1": {"title": "New Input 1", "type": "string"},
             "newInput2": {
-              "title":"New Input 2",
+              "title": "New Input 2",
               "type": "object",
               "properties": {
-                "newInput1": {
-                  "title":"New Input 2.1",
+                "newInput1": {"title": "New Input 2.1", "type": "string"},
+                "newInput2": {
+                  "enum": ["1", "2", "3"],
+                  "enumNames": ['a', 'b', 'c'],
+                  "title": "New Input 2.2",
                   "type": "string"
-                },
-                "newInput2":{
-                  "enum":[
-                    "1",
-                    "2",
-                    "3"
-                  ],
-                  "enumNames": [
-                    'a',
-                    'b',
-                    'c'
-                  ],
-                  "title":"New Input 2.2",
-                  "type":"string"
                 }
               }
             },
@@ -70,89 +46,42 @@ class Schemas {
               "type": "object",
               "title": "New Input 3",
               "properties": {
-                "newInput1": {
-                  "type": "boolean",
-                  "title": "New Input 3.1"
-                },
-                "newInput2": {
-                  "type": "boolean",
-                  "title": "New Input 3.2"
-                }
+                "newInput1": {"type": "boolean", "title": "New Input 3.1"},
+                "newInput2": {"type": "boolean", "title": "New Input 3.2"}
               }
             },
-            "newInput4":{
-              "enum":[
-                "1",
-                "2",
-                "3"
-              ],
-              "enumNames": [
-                'a',
-                'b',
-                'c'
-              ],
-              "title":"New Input 4",
-              "type":"string"
+            "newInput4": {
+              "enum": ["1", "2", "3"],
+              "enumNames": ['a', 'b', 'c'],
+              "title": "New Input 4",
+              "type": "string"
             }
           }
         }
       }
     },
     "ui": {
-      "fixedItemsList": {
-        "ui:widget": "reader"
-      },
+      "fixedItemsList": {"ui:widget": "reader"},
       "card": {
-        "ui:widget": "card",
         "ui:order": ["newInput2", "newInput3", "newInput1", "newInput4"],
-        "newInput1": {
-          "ui:emptyValue": ""
-        },
+        "newInput1": {"ui:emptyValue": ""},
         "newInput2": {
           "ui:order": ["newInput2", "newInput1"],
-          "newInput1": {
-            "ui:emptyValue": ""
-          },
-          "newInput2": {
-            "ui:widget": "radio"
-          }
+          "newInput1": {"ui:emptyValue": ""},
+          "newInput2": {"ui:widget": "radio"}
         },
         "newInput3": {
-          "newInput2": {
-            "ui:widget": "select"
-          }
+          "newInput2": {"ui:widget": "select"}
         },
-        "newInput4": {
-          "ui:widget":"radio"
-        }
+        "newInput4": {"ui:widget": "radio"}
       }
     },
     "formData": {
-      "fixedItemsList":  [
-        {
-          "word": "The",
-          "translation": "артикль",
-          "count": 0,
-          "active": false
-        },
-        {
-          "word": "first",
-          "translation": "первый",
-          "count": 0,
-          "active": false
-        },
-        {
-          "word": "simple",
-          "translation": "простой",
-          "count": 0,
-          "active": false
-        },
-        {
-          "word": "text",
-          "translation": "текст",
-          "count": 0,
-          "active": false
-        }
+      "fixedItemsList": [
+        {"word": "The", "translation": "артикль", "count": 0, "active": true},
+        {"word": "first", "translation": "первый", "count": 0, "active": true},
+        {"word": "simple", "translation": "простой", "count": 0, "active": true},
+        {"word": "text", "translation": "текст", "count": 0, "active": true}
       ]
     }
   };
@@ -165,13 +94,15 @@ class Schemas {
       "type": "object",
       "required": ["firstName", "lastName"],
       "properties": {
-        "firstName": {"type": "string", "title": "First name", "default": "Chuck"},
+        "firstName": {"type": "string", "title": "First name"},
         "lastName": {"type": "string", "title": "Last name"},
         "telephone": {"type": "string", "title": "Telephone", "minLength": 10}
       }
     },
     "ui": {
-      "firstName": {"ui:autofocus": true, "ui:emptyValue": "", "ui:autocomplete": "family-name"},
+      "firstName": {
+        "ui:widget": "customfile",
+      },
       "lastName": {"ui:emptyValue": "", "ui:autocomplete": "given-name"},
       "age": {
         "ui:widget": "updown",
@@ -186,7 +117,7 @@ class Schemas {
       }
     },
     "formData": {
-      "firstName": "Chuck",
+      "firstName": "https://flutter-sound.canardoux.xyz/web_example/assets/extract/05.mp3",
       "lastName": "Norris",
       "age": 75,
       "bio": "Roundhouse kicking asses since 1940",
@@ -435,8 +366,8 @@ class Schemas {
           "type": "object",
           "title": "String formats",
           "properties": {
-            "email": {"type": "string", "title":"email", "format": "email"},
-            "uri": {"type": "string", "title":"uri", "format": "uri"}
+            "email": {"type": "string", "title": "email", "format": "email"},
+            "uri": {"type": "string", "title": "uri", "format": "uri"}
           }
         },
         "boolean": {
@@ -1544,6 +1475,7 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
+    test,
     simple,
     nested,
     arrays,

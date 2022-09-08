@@ -1,10 +1,11 @@
 import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:uniturnip/json_schema_ui/examples/schemas.dart';
 import 'package:uniturnip/json_schema_ui/json_schema_ui.dart';
 import 'package:uniturnip/json_schema_ui/models/mapPath.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Map<String, dynamic> _data = const {};
-  String _path = '';
+  bool disabled = false;
+
+  // String _path = '';
 
   final List<Tab> myTabs = <Tab>[
     const Tab(icon: Icon(Icons.edit)),
@@ -59,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
-    int defaultPage = 4;
+    int defaultPage = 0;
     _tabController.addListener(_handleTabSelection);
     _schemas = Schemas.schemas;
     _schema = Schemas.schemas[defaultPage]['schema'];
@@ -109,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -121,17 +124,20 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             tabs: myTabs,
           )),
       drawer: Drawer(
-        child: ListView.builder(
-          // Important: Remove any padding from the ListView.
-          controller: ScrollController(),
-          padding: EdgeInsets.zero,
-          itemCount: _schemas.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(_schemas[index]['label']),
-              onTap: () =>  _setSchema(index),
-            );
-          },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: ListView.builder(
+            // Important: Remove any padding from the ListView.
+            controller: ScrollController(),
+            padding: EdgeInsets.zero,
+            itemCount: _schemas.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: Text(_schemas[index]['label']),
+                onTap: () => _setSchema(index),
+              );
+            },
+          ),
         ),
       ),
       body: Center(
@@ -139,14 +145,26 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    disabled = !disabled;
+                  });
+                },
+                child: Text('Disabled: $disabled')),
             Form(
-              child:JSONSchemaUI(
-                    schema: _schema,
-                    ui: _ui,
-                    onUpdate: _updateDataAndPath,
-                    data: _data,
-                    controller: formController,
-                  ),
+              child: JSONSchemaUI(
+                schema: _schema,
+                ui: _ui,
+                onUpdate: _updateDataAndPath,
+                data: _data,
+                // formController: UIModel(disabled: disabled),
+                saveAudioRecord: saveAudioRecord,
+                // saveFile: saveFile,
+                onSubmit: ({required Map<String, dynamic> data}) {
+                  print(data);
+                },
+              ),
             ),
             // Text('Data: $_data \n Path: $_path'),
             Padding(
@@ -209,8 +227,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
+  Future<String> saveAudioRecord(String filepath) async {
+    // var haystack = await File(filepath).readAsBytes();
+    print('FUTURE AUDIO RECORD');
+    return filepath;
+  }
+
+  Future<String> saveFile(List<String?> filepath, FileType type, {bool private = false}) async {
+    print('FUTURE SAVE FILE');
+    print(type);
+    print(filepath);
+    return filepath[0]!;
+  }
+
   void _updateDataAndPath({required Map<String, dynamic> data, required MapPath path}) {
-    textControl.text = JsonEncoder.withIndent(' ' * 4).convert(formController.data);
+    print(data);
+    print(path);
+    // textControl.text = JsonEncoder.withIndent(' ' * 4).convert(formController.data);
     // setState(() {
     //   _data = data;
     // });

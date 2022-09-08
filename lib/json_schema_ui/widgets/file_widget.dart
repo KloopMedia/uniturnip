@@ -1,126 +1,164 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
+import 'dart:convert';
 
-import '../../../../json_schema_ui/models/widget_data.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:uniturnip/json_schema_ui/models/file_model.dart';
+import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+
 import 'widget_ui.dart';
 
-// TODO: Refactor FileWidget
 class FileWidget extends StatefulWidget {
-  const FileWidget({Key? key, required this.widgetData}) : super(key: key);
-
   final WidgetData widgetData;
 
+  const FileWidget({Key? key, required this.widgetData}) : super(key: key);
+
   @override
-  _FileWidgetState createState() => _FileWidgetState();
+  State<FileWidget> createState() => _FileWidgetState();
 }
 
 class _FileWidgetState extends State<FileWidget> {
-  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  String? _fileName;
-  List<PlatformFile>? _paths;
-  String? _extension;
-  bool _isLoading = false;
-  bool _userAborted = false;
-  bool _multiPick = true;
-  FileType _pickingType = FileType.any;
-  final TextEditingController _controller = TextEditingController();
-  String title = '';
-  String description = '';
+  late final String title = widget.widgetData.title;
+  late final String description = widget.widgetData.description;
+  late final bool required = widget.widgetData.required;
+  late final bool _multiPick;
+  late final bool _private;
+  UploadTask? _uploadTask;
+  late Map<String, dynamic> value;
 
-  @override
-  void initState() {
-    super.initState();
-    title = widget.widgetData.schema['title'] ?? '';
-    description = widget.widgetData.schema['description'] ?? '';
-    _controller.addListener(() => _extension = _controller.text);
-  }
+  List<FileModel> _files = [];
 
-  void _pickFiles() async {
-    _resetState();
-    try {
-      _paths = (await FilePicker.platform.pickFiles(
-        type: _pickingType,
-        allowMultiple: _multiPick,
-        onFileLoading: (FilePickerStatus status) => print(status),
-        allowedExtensions:
-            (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
-      ))
-          ?.files;
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    }
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-      _fileName = _paths != null ? _paths!.map((e) => e.name).toString() : '...';
-      _userAborted = _paths == null;
-    });
-  }
-
-  void _clearCachedFiles() async {
-    _resetState();
-    try {
-      bool? result = await FilePicker.platform.clearTemporaryFiles();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: result! ? Colors.green : Colors.red,
-          content: Text((result
-              ? 'Temporary files removed with success.'
-              : 'Failed to clean temporary files')),
-        ),
-      );
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
+  Map<String, dynamic> _parseValue(dynamic rawData) {
+    if (rawData is String) {
+      var parsedData = json.decode(rawData);
+      return {...parsedData};
+    } else if (rawData is Map) {
+      return {...rawData};
+    } else {
+      return {};
     }
   }
 
-  Future<void> _saveFile() async {
-    _resetState();
-    try {
-      String? fileName = await FilePicker.platform.saveFile(
-        allowedExtensions:
-            (_extension?.isNotEmpty ?? false) ? _extension?.replaceAll(' ', '').split(',') : null,
-        type: _pickingType,
-      );
-      setState(() {
-        _userAborted = fileName == null;
-      });
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation' + e.toString());
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
+  List<FileModel> _getDistinctFiles(files) {
+    var seen = <String>{};
+    return files.where((file) => seen.add(file.name)).toList();
   }
 
-  void _logException(String message) {
-    print(message);
-    _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-    _scaffoldMessengerKey.currentState?.showSnackBar(
+  void _encodeAndSave(Map<String, dynamic> value) {
+    // Convert Map to JSON
+    var encoded = json.encode(value);
+    // Save new value in formData
+    widget.widgetData.onChange(widget.widgetData.path, encoded);
+  }
+
+  void _showSnackBar(String content) {
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(content, textAlign: TextAlign.center),
+        backgroundColor: Colors.green,
       ),
     );
   }
 
-  void _resetState() {
-    if (!mounted) {
-      return;
+  @override
+  void initState() {
+    value = _parseValue(widget.widgetData.value);
+    if (value.keys.isNotEmpty) {
+      for (var file in value.entries) {
+        _files.add(FileModel(name: file.key, path: file.value));
+      }
+      setState(() {});
     }
+    _multiPick = widget.widgetData.uiSchema['ui:options']?["multiple"] ?? false;
+    _private = widget.widgetData.uiSchema['ui:options']?["private"] ?? false;
+    super.initState();
+  }
+
+  void _pickFile(FileType type) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(type: type);
+      var paths = result?.paths;
+      if (!mounted || paths == null || paths.isEmpty) return;
+
+      for (var path in paths) {
+        var uploadTask = await context.read<UIModel>().saveFile!(
+          path!,
+          type,
+          private: _private,
+        );
+
+        setState(() {
+          _uploadTask = uploadTask;
+        });
+
+        // When upload is finished get filename and firebase storage path
+        final snapshot = await uploadTask!.whenComplete(() {});
+        final name = snapshot.ref.name;
+        final storagePath = snapshot.ref.fullPath;
+
+        // Add file to preview list
+        final files = [..._files, FileModel(name: name, path: storagePath, type: type)];
+        final distinctFiles = _getDistinctFiles(files);
+        setState(() {
+          _files = distinctFiles;
+        });
+
+        // Make a copy of value and add new file entry
+        var formData = {...value, name: storagePath};
+        _encodeAndSave(formData);
+      }
+    } on PlatformException catch (e) {
+      print(e);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void openFile(String path) async {
+    try {
+      var file = await context.read<UIModel>().getFile!(path);
+      if (!mounted) return;
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return Scaffold(
+          body: GestureDetector(
+            child: Center(
+              child: Builder(builder: (context) {
+                final url = file.url;
+                if (url != null) {
+                  if (file.type == FileType.image) {
+                    return Hero(
+                      tag: 'imageHero',
+                      child: Image.network(url),
+                    );
+                  }
+                }
+                return const SizedBox.shrink();
+              }),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }));
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  void _removeFile(String name) {
+    var files = [..._files];
+    var val = {...value};
+    files.removeWhere((element) => element.name == name);
+    val.remove(name);
+    _encodeAndSave(val);
     setState(() {
-      _isLoading = true;
-      _fileName = null;
-      _paths = null;
-      _userAborted = false;
+      _files = files;
+      value = val;
     });
   }
 
@@ -129,46 +167,121 @@ class _FileWidgetState extends State<FileWidget> {
     return WidgetUI(
       title: title,
       description: description,
+      required: required,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () => _pickFiles(),
-                child: Text(_multiPick ? 'Pick files' : 'Pick file'),
-              ),
-              ElevatedButton(
-                onPressed: () => _saveFile(),
-                child: const Text('Save file'),
-              ),
-              ElevatedButton(
-                onPressed: () => _clearCachedFiles(),
-                child: const Text('Clear temporary files'),
-              ),
-            ],
-          ),
-          Builder(
-            builder: (BuildContext context) {
-              if (_isLoading) {
-                return const CircularProgressIndicator();
-              } else if (_userAborted) {
-                return const Text('User has aborted the dialog');
-              } else if (_paths != null) {
-                return ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) =>
-                      Text('File $index: ${_fileName ?? '...'}'),
-                  separatorBuilder: (BuildContext context, int index) => const Divider(),
-                  itemCount: _paths!.isNotEmpty ? _paths!.length : 1,
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          ),
+        children: [
+          FileSelectorButtonGroup(onSelect: _pickFile),
+          UploadProgress(task: _uploadTask),
+          for (var file in _files)
+            FileControlButtonGroup(
+              name: file.name,
+              onRemove: () {
+                _removeFile(file.name);
+              },
+              onPreview: () {
+                openFile(file.path);
+              },
+              onCopy: () {
+                Clipboard.setData(ClipboardData(text: file.path)).then((_) {
+                  _showSnackBar("Path copied!");
+                });
+              },
+            )
         ],
       ),
+    );
+  }
+}
+
+class UploadProgress extends StatelessWidget {
+  final UploadTask? task;
+
+  const UploadProgress({Key? key, required this.task}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (task == null) return const SizedBox.shrink();
+
+    return StreamBuilder<TaskSnapshot>(
+      stream: task!.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final snap = snapshot.data!;
+          final progress = snap.bytesTransferred / snap.totalBytes;
+          return Row(
+            children: [
+              Text(
+                snap.ref.name,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Expanded(child: LinearProgressIndicator(value: progress)),
+              Text('${progress.toInt() * 100}'),
+            ],
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+}
+
+class FileSelectorButtonGroup extends StatelessWidget {
+  final void Function(FileType type) onSelect;
+
+  const FileSelectorButtonGroup({Key? key, required this.onSelect}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () {
+            onSelect(FileType.image);
+          },
+          icon: const Icon(Icons.image),
+        ),
+        IconButton(
+          onPressed: () {
+            onSelect(FileType.video);
+          },
+          icon: const Icon(Icons.video_file),
+        ),
+        IconButton(
+          onPressed: () {
+            onSelect(FileType.any);
+          },
+          icon: const Icon(Icons.insert_drive_file),
+        )
+      ],
+    );
+  }
+}
+
+class FileControlButtonGroup extends StatelessWidget {
+  final String name;
+  final void Function() onRemove;
+  final void Function() onPreview;
+  final void Function() onCopy;
+
+  const FileControlButtonGroup({
+    Key? key,
+    required this.name,
+    required this.onRemove,
+    required this.onPreview,
+    required this.onCopy,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
+        IconButton(onPressed: onPreview, icon: const Icon(Icons.visibility)),
+        IconButton(onPressed: onRemove, icon: const Icon(Icons.delete)),
+        IconButton(onPressed: onCopy, icon: const Icon(Icons.copy)),
+      ],
     );
   }
 }
