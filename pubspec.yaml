@@ -37,11 +37,14 @@ dependencies:
   file_picker: ^5.0.1
   permission_handler: ^9.2.0
   form_field_validator: ^1.1.0
-  audio_recorder:
-#    path: ../audio_recorder
-    git:
-      url: https://github.com/KloopMedia/audio_recorder.git
+  flutter_sound: ^9.2.13
+  audio_session: ^0.1.8
+  intl: ^0.17.0
+  path_provider: ^2.0.11
+  logger: ^1.1.0
   firebase_storage: ^10.3.6
+  cached_network_image: ^3.2.1
+  chewie: ^1.3.4
 
 dev_dependencies:
   flutter_test:
