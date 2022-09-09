@@ -14,8 +14,6 @@ class PasswordWidget extends StatefulWidget {
 
 class _PasswordWidgetState extends State<PasswordWidget> {
   late final TextEditingController textControl;
-  late final String title;
-  late final String description;
 
   @override
   void initState() {
@@ -35,12 +33,9 @@ class _PasswordWidgetState extends State<PasswordWidget> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
         validator: MultiValidator([

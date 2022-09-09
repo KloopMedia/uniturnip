@@ -15,8 +15,6 @@ class DateWidget extends StatefulWidget {
 
 class _DateWidgetState extends State<DateWidget> {
   late final TextEditingController textControl;
-  late final String title;
-  late final String description;
 
   @override
   void initState() {
@@ -36,9 +34,6 @@ class _DateWidgetState extends State<DateWidget> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
@@ -54,8 +49,8 @@ class _DateWidgetState extends State<DateWidget> {
     }
 
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
         validator: (val) {
