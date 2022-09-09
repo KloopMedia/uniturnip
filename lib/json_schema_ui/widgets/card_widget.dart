@@ -5,9 +5,6 @@ import '../models/mapPath.dart';
 import '../utils.dart';
 
 class CardWidget extends StatefulWidget {
-  // const CardWidget({Key? key, required this.widgetData}) : super(key: key);
-  //final WidgetData widgetData;
-
   const CardWidget({Key? key, required this.schema, required this.uiSchema, required this.path}) : super(key: key);
   final Map<String, dynamic> schema;
   final Map<String, dynamic> uiSchema;
