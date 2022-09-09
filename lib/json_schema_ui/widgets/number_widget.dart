@@ -21,8 +21,6 @@ class _NumberWidgetState extends State<NumberWidget> {
 
   @override
   void initState() {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
     final dynamic value = widget.widgetData.value;
     final String text = value != null ? value.toString() : '';
     textControl = TextEditingController(text: text);
@@ -40,6 +38,9 @@ class _NumberWidgetState extends State<NumberWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+
     return WidgetUI(
       title: title,
       description: description,

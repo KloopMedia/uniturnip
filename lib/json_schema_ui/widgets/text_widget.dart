@@ -20,8 +20,6 @@ class _TextWidgetState extends State<TextWidget> {
 
   @override
   void initState() {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
     required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
     final String text = value != null ? value.toString() : '';
@@ -40,6 +38,9 @@ class _TextWidgetState extends State<TextWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+    
     if (widget.widgetData.schema.containsKey('examples')) {
       List<String> _options = widget.widgetData.schema['examples'];
 

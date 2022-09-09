@@ -20,9 +20,6 @@ class _DateWidgetState extends State<DateWidget> {
 
   @override
   void initState() {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     textControl = TextEditingController(text: widget.widgetData.value ?? '');
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
@@ -39,6 +36,9 @@ class _DateWidgetState extends State<DateWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
