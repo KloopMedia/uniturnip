@@ -19,8 +19,6 @@ class _TextareaWidgetState extends State<TextareaWidget> {
 
   @override
   void initState() {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
     required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
     final String text = value != null ? value.toString() : '';
@@ -39,6 +37,9 @@ class _TextareaWidgetState extends State<TextareaWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+
     return WidgetUI(
       title: title,
       description: description,

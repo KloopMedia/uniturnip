@@ -24,8 +24,8 @@ class FileWidget extends StatefulWidget {
 }
 
 class _FileWidgetState extends State<FileWidget> {
-  late final String title = widget.widgetData.title;
-  late final String description = widget.widgetData.description;
+  late String title;
+  late String description;
   late final bool required = widget.widgetData.required;
   late final bool _multiPick;
   late final bool _private;
@@ -172,6 +172,9 @@ class _FileWidgetState extends State<FileWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+
     return WidgetUI(
       title: title,
       description: description,

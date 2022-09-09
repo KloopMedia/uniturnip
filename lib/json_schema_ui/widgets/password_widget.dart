@@ -19,9 +19,6 @@ class _PasswordWidgetState extends State<PasswordWidget> {
 
   @override
   void initState() {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     textControl = TextEditingController(text: widget.widgetData.value ?? '');
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
@@ -38,6 +35,9 @@ class _PasswordWidgetState extends State<PasswordWidget> {
 
   @override
   Widget build(BuildContext context) {
+    title = widget.widgetData.title;
+    description = widget.widgetData.description;
+
     return WidgetUI(
       title: title,
       description: description,
