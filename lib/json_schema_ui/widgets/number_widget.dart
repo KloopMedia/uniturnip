@@ -16,8 +16,6 @@ class NumberWidget extends StatefulWidget {
 
 class _NumberWidgetState extends State<NumberWidget> {
   late final TextEditingController textControl;
-  late final String title;
-  late final String description;
 
   @override
   void initState() {
@@ -38,12 +36,9 @@ class _NumberWidgetState extends State<NumberWidget> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: Column(children: <Widget>[
         TextFormField(

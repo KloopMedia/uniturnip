@@ -13,8 +13,6 @@ class TextareaWidget extends StatefulWidget {
 
 class _TextareaWidgetState extends State<TextareaWidget> {
   late final TextEditingController textControl;
-  late final String title;
-  late final String description;
   late final bool required;
 
   @override
@@ -37,12 +35,9 @@ class _TextareaWidgetState extends State<TextareaWidget> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
       required: required,
       child: TextFormField(
         validator: (val) {

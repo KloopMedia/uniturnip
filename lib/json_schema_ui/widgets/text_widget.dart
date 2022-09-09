@@ -14,8 +14,6 @@ class TextWidget extends StatefulWidget {
 
 class _TextWidgetState extends State<TextWidget> {
   late final TextEditingController textControl;
-  late final String title;
-  late final String description;
   late final bool required;
 
   @override
@@ -38,15 +36,12 @@ class _TextWidgetState extends State<TextWidget> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.widgetData.title;
-    description = widget.widgetData.description;
-    
     if (widget.widgetData.schema.containsKey('examples')) {
       List<String> _options = widget.widgetData.schema['examples'];
 
       return WidgetUI(
-        title: title,
-        description: description,
+        title: widget.widgetData.title,
+        description: widget.widgetData.description,
         required: widget.widgetData.required,
         child: Autocomplete<String>(
           fieldViewBuilder: (
@@ -89,8 +84,8 @@ class _TextWidgetState extends State<TextWidget> {
     }
 
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
       required: required,
       child: TextFormField(
         validator: RequiredValidator(
