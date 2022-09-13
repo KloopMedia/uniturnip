@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'models/mapPath.dart';
+import 'models/ui_model.dart';
 import 'models/widget_data.dart';
 
 class Utils {
@@ -143,10 +145,10 @@ class Utils {
         fields = _sortFields(fields, order);
       }
     }
-    // else if (schema['items'] != null) {
-    //   final int length = context.select((UIModel uiModel) => uiModel.getDataByPath(path)?.length ?? 1);
-    //   fields = Iterable<int>.generate(length).toList();
-    // }
+    else if (schema['items'] != null) {
+      final int length = context.select((UIModel uiModel) => uiModel.getDataByPath(path)?.length ?? 1);
+      fields = Iterable<int>.generate(length).toList();
+    }
     return fields;
   }
 }
