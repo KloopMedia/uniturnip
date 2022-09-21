@@ -55,8 +55,8 @@ class _AudioWidgetState extends State<AudioWidget> {
             disabled: widget.widgetData.disabled,
             isExternal: defaultValue.isNotEmpty,
             url: snapshot.data,
-            onRecorderStop: (filepath) async {
-              var storagePath = await context.read<UIModel>().saveAudioRecord!(filepath, private);
+            onRecorderStop: (file) async {
+              var storagePath = await context.read<UIModel>().saveAudioRecord!(file, private);
               widget.widgetData.onChange(widget.widgetData.path, storagePath);
             },
           );

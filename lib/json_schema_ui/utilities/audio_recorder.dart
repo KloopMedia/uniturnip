@@ -5,6 +5,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart' show Level;
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,7 +28,7 @@ enum AudioState {
   isRecordingPaused,
 }
 
-typedef OnRecorderStop = void Function(String path);
+typedef OnRecorderStop = void Function(XFile file);
 
 class AudioRecorder extends StatefulWidget {
   final String? url;
@@ -223,7 +224,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
       await recorderModule.stopRecorder();
       cancelRecorderSubscriptions();
       cancelRecordingDataSubscription();
-      widget.onRecorderStop(_path!);
+      final file = XFile(_path!);
+      widget.onRecorderStop(file);
     } on Exception catch (err) {
       recorderModule.logger.d('stopRecorder error: $err');
     }
