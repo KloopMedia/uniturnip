@@ -44,7 +44,7 @@ class UIModel extends ChangeNotifier {
     } else {
       int arrayLength = array.length;
       MapPath newPath = path.add('leaf', arrayLength);
-      _data = Utils.modifyMapByPath(newPath, _data, null);
+      _data = Utils.modifyMapByPath(newPath, _data, '');
     }
     notifyListeners();
     onUpdate!(path: path, data: data);

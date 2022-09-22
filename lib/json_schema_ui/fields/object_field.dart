@@ -45,17 +45,15 @@ class JSONSchemaUIField extends StatelessWidget {
           ObjectHeader(title: title, description: description),
         // TODO: Find out if there are any difference between for loop and listview in terms of optimization
 
-        for (String field in fields)
-          ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
+        for (dynamic field in fields)
+        ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
 
         if (path.isLastArray()) ArrayPanel(path),
-      ]
-          .map(
-            (e) => Padding(
-              padding: const EdgeInsets.all(3),
-              child: e,
-            ),
-          )
+      ].map((e) => Padding(
+          padding: const EdgeInsets.all(3),
+          child: e,
+        ),
+      )
           .toList(),
     );
   }
@@ -92,7 +90,7 @@ class ObjectBody extends StatelessWidget {
   final Map<String, dynamic> schema;
   final Map<String, dynamic> uiSchema;
   final MapPath path;
-  final String field;
+  final dynamic field;
   final bool disabled;
 
   const ObjectBody({
