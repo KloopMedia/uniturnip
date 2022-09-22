@@ -41,7 +41,7 @@ class JSONSchemaUIField extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (path.isLastObject() || path.isLastArray())
+        // if (path.isLastObject() || path.isLastArray())
           ObjectHeader(title: title, description: description),
         // TODO: Find out if there are any difference between for loop and listview in terms of optimization
 
@@ -76,8 +76,9 @@ class ObjectHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != null) Text(title!, style: Theme.of(context).textTheme.headlineMedium),
-          if (description != null) Text(description!, style: Theme.of(context).textTheme.headlineSmall),
+          if (title != null) Text(title!, style: const TextStyle(fontSize: 25)),
+          if (description != null)
+            Text(description!, style: const TextStyle(fontSize: 21)),
           const Divider(height: 10),
         ],
       ),
@@ -109,11 +110,7 @@ class ObjectBody extends StatelessWidget {
     String schemaType = newSchema['type'] ?? 'not_defined';
     if (schemaType == 'object' || schemaType == 'array') {
       if (newSchema.containsKey('subtype') && newSchema['subtype'] == "card") {
-        return CardWidget(
-          schema: newSchema,
-          uiSchema: newUiSchema,
-          path: path
-        );
+        return CardWidget(schema: newSchema, uiSchema: newUiSchema, path: path);
       }
 
       // TODO: Add FixedItemsList handling

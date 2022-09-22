@@ -304,6 +304,11 @@ class Schemas {
       "description": "A simple form example.",
       "type": "object",
       "properties": {
+        "test": {
+          "title": "test link",
+          "type": "string",
+          "default": "google.com"
+        },
         "fixedItemsList": {
           "type": "array",
           "title": "A list of fixed items",
@@ -414,6 +419,7 @@ class Schemas {
       }
     },
     "ui": {
+      "test": {"ui:widget": "customlink"},
       "fixedItemsList": {"ui:widget": "reader"},
       "card": {
         "q_1": {

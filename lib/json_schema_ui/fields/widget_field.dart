@@ -23,7 +23,7 @@ class WidgetField extends StatelessWidget {
       case 'checkboxes':
         return CheckboxesWidget(widgetData: widgetData);
       case 'customlink':
-        return CustomlinkWidget(widgetData: widgetData);
+        return LinkWidget(widgetData: widgetData);
       case 'radio':
         return RadioWidget(widgetData: widgetData);
       case 'select':
