@@ -38,24 +38,27 @@ class JSONSchemaUIField extends StatelessWidget {
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // if (path.isLastObject() || path.isLastArray())
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          // if (path.isLastObject() || path.isLastArray())
           ObjectHeader(title: title, description: description),
-        // TODO: Find out if there are any difference between for loop and listview in terms of optimization
+          // TODO: Find out if there are any difference between for loop and listview in terms of optimization
 
-        for (dynamic field in fields)
-        ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
+          for (dynamic field in fields)
+            Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: ObjectBody(
+                path: path,
+                uiSchema: ui,
+                schema: schema,
+                field: field,
+                disabled: disabled,
+              ),
+            ),
 
-        if (path.isLastArray()) ArrayPanel(path),
-      ].map((e) => Padding(
-          padding: const EdgeInsets.all(3),
-          child: e,
-        ),
-      )
-          .toList(),
-    );
+          if (path.isLastArray()) ArrayPanel(path),
+        ]);
   }
 }
 
@@ -77,8 +80,7 @@ class ObjectHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) Text(title!, style: const TextStyle(fontSize: 25)),
-          if (description != null)
-            Text(description!, style: const TextStyle(fontSize: 21)),
+          if (description != null) Text(description!, style: const TextStyle(fontSize: 21)),
           const Divider(height: 10),
         ],
       ),
