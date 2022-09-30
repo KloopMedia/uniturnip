@@ -74,6 +74,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   IOSink? sink;
 
   Future<void> _initializeExample() async {
+    print("AUDIO URL ==> ${widget.url}");
     await playerModule.closePlayer();
     await playerModule.openPlayer();
     await playerModule.setSubscriptionDuration(const Duration(milliseconds: 10));
