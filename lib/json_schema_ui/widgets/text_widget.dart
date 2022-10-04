@@ -20,8 +20,9 @@ class _TextWidgetState extends State<TextWidget> {
   void initState() {
     required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
+    final String defaultValue = widget.widgetData.schema['default'] ?? '';
     final String text = value != null ? value.toString() : '';
-    textControl = TextEditingController(text: text);
+    textControl = TextEditingController(text: value != null ? text : defaultValue);
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
@@ -56,9 +57,11 @@ class _TextWidgetState extends State<TextWidget> {
               ),
               controller: textEditingController,
               decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+                border: OutlineInputBorder(),
+                enabledBorder:
+                    OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+                focusedBorder:
+                    OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
               ),
               focusNode: focusNode,
               onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
@@ -98,8 +101,10 @@ class _TextWidgetState extends State<TextWidget> {
         readOnly: widget.widgetData.readonly,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
-          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
         ),
       ),
     );
