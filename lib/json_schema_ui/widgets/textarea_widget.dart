@@ -46,6 +46,7 @@ class _TextareaWidgetState extends State<TextareaWidget> {
           }
           return null;
         },
+        style: TextStyle(fontSize: 12, color: Colors.red),
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
         enabled: !widget.widgetData.disabled,

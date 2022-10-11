@@ -51,8 +51,8 @@ class _AudioWidgetState extends State<AudioWidget> {
             return const CircularProgressIndicator();
           }
           return AudioRecorder(
-            disabled: widget.widgetData.disabled,
-            isExternal: defaultValue.isNotEmpty,
+            // disabled: widget.widgetData.disabled,
+            // isExternal: defaultValue.isNotEmpty,
             url: snapshot.data ?? defaultValue,
             onRecorderStop: (file) async {
               var storagePath = await context.read<UIModel>().saveAudioRecord!(file, private);

@@ -32,9 +32,12 @@ class UIModel extends ChangeNotifier {
   UnmodifiableMapView<String, dynamic> get data => UnmodifiableMapView<String, dynamic>(_data);
 
   void modifyData(MapPath path, dynamic value) {
-    _data = Utils.modifyMapByPath(path, _data, value);
-    notifyListeners();
-    onUpdate!(path: path, data: data);
+    if(disabled == false){
+      _data = Utils.modifyMapByPath(path, _data, value);
+      notifyListeners();
+      onUpdate!(path: path, data: data);
+    }
+    return null;
   }
 
   void addArrayElement(MapPath path) {
@@ -99,7 +102,10 @@ class UIModel extends ChangeNotifier {
   List<String> get translationList => _translationList;
 
   void setData(List<Map<String, dynamic>> value) {
-    _dataValue = value;
+    if(disabled == false){
+      _dataValue = value;
+    }
+    return null;
   }
 
   void getSentenceAsList() {
