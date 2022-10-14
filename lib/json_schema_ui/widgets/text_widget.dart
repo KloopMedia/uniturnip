@@ -52,7 +52,7 @@ class _TextWidgetState extends State<TextWidget> {
             VoidCallback onFieldSubmitted,
           ) {
             return TextFormField(
-              style: TextStyle(fontSize: 12, color: Colors.blue),
+              style: Theme.of(context).textTheme.headlineSmall,
               validator: RequiredValidator(
                 errorText: 'Please enter a text',
               ),
@@ -95,6 +95,7 @@ class _TextWidgetState extends State<TextWidget> {
         validator: RequiredValidator(
           errorText: 'Please enter a text',
         ),
+        style: Theme.of(context).textTheme.headlineSmall,
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
         enabled: !widget.widgetData.disabled,
