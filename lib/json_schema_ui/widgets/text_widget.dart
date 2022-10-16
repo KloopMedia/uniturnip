@@ -14,11 +14,9 @@ class TextWidget extends StatefulWidget {
 
 class _TextWidgetState extends State<TextWidget> {
   late final TextEditingController textControl;
-  late final bool required;
 
   @override
   void initState() {
-    required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
     final String text = value != null ? value.toString() : '';
     textControl = TextEditingController(text: text);
@@ -51,9 +49,10 @@ class _TextWidgetState extends State<TextWidget> {
             VoidCallback onFieldSubmitted,
           ) {
             return TextFormField(
-              validator: RequiredValidator(
-                errorText: 'Please enter a text',
-              ),
+              validator: (val) {
+                if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+                return null;
+              },
               controller: textEditingController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -86,11 +85,12 @@ class _TextWidgetState extends State<TextWidget> {
     return WidgetUI(
       title: widget.widgetData.title,
       description: widget.widgetData.description,
-      required: required,
+      required: widget.widgetData.required,
       child: TextFormField(
-        validator: RequiredValidator(
-          errorText: 'Please enter a text',
-        ),
+        validator: (val) {
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+          return null;
+        },
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
         enabled: !widget.widgetData.disabled,

@@ -6,6 +6,128 @@ class Schemas {
       "description": "A simple form example.",
       "type": "object",
       "properties": {
+        "newInput1": {
+          "title": "New Input 1",
+          "type": "string"
+        },
+        "newInput2": {
+          "title": "New Input 2",
+          "type": "boolean",
+          "enum": [
+            "First",
+            "Second",
+            "Third"
+          ]
+        },
+        "newInput3": {
+          "format": "date",
+          "title": "New Input 3",
+          "type": "string"
+        },
+        "newInput4": {
+          "format": "date-time",
+          "title": "New Input 4",
+          "type": "string"
+        },
+        "newInput5": {
+          "enum": [
+            "One",
+            "Two",
+            "Three"
+          ],
+          "title": "New Input 5",
+          "type": "string"
+        },
+        "newInput6": {
+          "title": "New Input 6",
+          "type": "string"
+        },
+        "newInput7": {
+          "enum": [
+            "Winter",
+            "Spring",
+            "Summer",
+            "Autumn"
+          ],
+          "title": "New Input 7",
+          "type": "string"
+        },
+        "newInput8": {
+          "title": "New Input 8",
+          "type": "number"
+        },
+        "newInput9": {
+          "title": "New Input 9",
+          "type": "boolean",
+        },
+        "newInput10": {
+          "title": "New Input 10",
+          "type": "string"
+        },
+        "newInput11": {
+          "title": "New Input 11",
+          "type": "string"
+        },
+      },
+      "dependencies": {},
+      "required": [
+        "newInput1",
+        "newInput2",
+        "newInput3",
+        "newInput4",
+        "newInput5",
+        "newInput6",
+        "newInput7",
+        "newInput8",
+        "newInput9",
+        "newInput10",
+        "newInput11"
+      ]
+    },
+
+    "ui": {
+      "newInput2": {
+        "ui:widget": "checkboxes"
+      },
+      "newInput6": {
+        "ui:widget": "textarea"
+      },
+      "newInput7": {
+        "ui:widget": "radio"
+      },
+      "newInput10": {
+        "ui:widget": "password"
+      },
+      "newInput11": {
+        "ui:widget": "email"
+      },
+      "ui:order": [
+        "newInput1",
+        "newInput2",
+        "newInput3",
+        "newInput4",
+        "newInput5",
+        "newInput6",
+        "newInput7",
+        "newInput8",
+        "newInput9",
+        "newInput10",
+        "newInput11"
+      ]
+    },
+
+    "formData": {
+      "newInput1": "",
+    }
+  };
+
+  static const Map<String, dynamic> test1 = {
+    "label": "Simple",
+    "schema": {
+      "title": "A registration form",
+      "description": "A simple form example.",
+      "type": "object",
+      "properties": {
         "fixedItemsList": {
           "type": "array",
           "title": "A list of fixed items",

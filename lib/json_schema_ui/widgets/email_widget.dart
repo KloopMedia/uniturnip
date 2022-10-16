@@ -38,14 +38,11 @@ class _EmailWidgetState extends State<EmailWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
-        validator: MultiValidator([
-          if (widget.widgetData.required) RequiredValidator(
-            errorText: "Required",
-          ),
-          EmailValidator(
-            errorText: "Please enter a valid email address",
-          ),
-        ]),
+        validator: (val) {
+          EmailValidator(errorText: "Please enter a valid email address");
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+          return null;
+        },
         controller: textControl,
         decoration: const InputDecoration(
           hintText: 'Email',

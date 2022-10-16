@@ -45,6 +45,7 @@ class _DateWidgetState extends State<DateWidget> {
       if (pickedDate != null) {
         final date = parseDate(pickedDate);
         widget.widgetData.onChange(widget.widgetData.path, date);
+        textControl.text = date;
       }
     }
 
@@ -54,7 +55,7 @@ class _DateWidgetState extends State<DateWidget> {
       required: widget.widgetData.required,
       child: TextFormField(
         validator: (val) {
-          if (val == null || val.isEmpty) return 'Please enter appropriate Date';
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
           return null;
         },
         controller: textControl,
