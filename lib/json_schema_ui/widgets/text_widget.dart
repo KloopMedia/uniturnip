@@ -14,11 +14,9 @@ class TextWidget extends StatefulWidget {
 
 class _TextWidgetState extends State<TextWidget> {
   late final TextEditingController textControl;
-  late final bool required;
 
   @override
   void initState() {
-    required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
     final String defaultValue = widget.widgetData.schema['default'] ?? '';
     final String text = value != null ? value.toString() : '';
@@ -53,16 +51,15 @@ class _TextWidgetState extends State<TextWidget> {
           ) {
             return TextFormField(
               style: Theme.of(context).textTheme.headlineSmall,
-              validator: RequiredValidator(
-                errorText: 'Please enter a text',
-              ),
+              validator: (val) {
+                if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+                return null;
+              },
               controller: textEditingController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                enabledBorder:
-                    OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
-                focusedBorder:
-                    OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
               ),
               focusNode: focusNode,
               onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
@@ -90,12 +87,13 @@ class _TextWidgetState extends State<TextWidget> {
     return WidgetUI(
       title: widget.widgetData.title,
       description: widget.widgetData.description,
-      required: required,
+      required: widget.widgetData.required,
       child: TextFormField(
-        validator: RequiredValidator(
-          errorText: 'Please enter a text',
-        ),
         style: Theme.of(context).textTheme.headlineSmall,
+        validator: (val) {
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+          return null;
+        },
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
         enabled: !widget.widgetData.disabled,
@@ -103,10 +101,8 @@ class _TextWidgetState extends State<TextWidget> {
         readOnly: widget.widgetData.readonly,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
-          enabledBorder:
-              OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
-          focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
         ),
       ),
     );

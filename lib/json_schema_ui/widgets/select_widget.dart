@@ -38,7 +38,11 @@ class SelectWidget extends StatelessWidget {
       title: title,
       description: description,
       required: widgetData.required,
-      child: DropdownButtonFormField(
+      child: DropdownButtonFormField<dynamic>(
+        validator: (val) {
+          if (widgetData.required && val == null) return 'Required';
+          return null;
+        },
         autofocus: widgetData.autofocus,
         hint: const Text('Select item'),
         value: widgetData.value,
