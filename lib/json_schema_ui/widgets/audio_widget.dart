@@ -45,7 +45,6 @@ class _AudioWidgetState extends State<AudioWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: FutureBuilder(
-        initialData: defaultValue,
         future: getAudio(context),
         builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -54,9 +53,9 @@ class _AudioWidgetState extends State<AudioWidget> {
           return AudioRecorder(
             disabled: widget.widgetData.disabled,
             isExternal: defaultValue.isNotEmpty,
-            url: snapshot.data,
-            onRecorderStop: (filepath) async {
-              var storagePath = await context.read<UIModel>().saveAudioRecord!(filepath, private);
+            url: snapshot.data ?? defaultValue,
+            onRecorderStop: (file) async {
+              var storagePath = await context.read<UIModel>().saveAudioRecord!(file, private);
               widget.widgetData.onChange(widget.widgetData.path, storagePath);
             },
           );

@@ -18,8 +18,9 @@ class _TextWidgetState extends State<TextWidget> {
   @override
   void initState() {
     final dynamic value = widget.widgetData.value;
+    final String defaultValue = widget.widgetData.schema['default'] ?? '';
     final String text = value != null ? value.toString() : '';
-    textControl = TextEditingController(text: text);
+    textControl = TextEditingController(text: value != null ? text : defaultValue);
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
@@ -49,6 +50,7 @@ class _TextWidgetState extends State<TextWidget> {
             VoidCallback onFieldSubmitted,
           ) {
             return TextFormField(
+              style: Theme.of(context).textTheme.headlineSmall,
               validator: (val) {
                 if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
                 return null;
@@ -87,6 +89,7 @@ class _TextWidgetState extends State<TextWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
         validator: (val) {
           if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
           return null;

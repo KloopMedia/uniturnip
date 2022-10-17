@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/fields/object_field.dart';
 
@@ -15,10 +16,15 @@ typedef SubmitCallback = void Function({
   required Map<String, dynamic> data,
 });
 
-typedef SaveAudioRecordCallback = Future<String> Function(String filepath, bool private);
+typedef SaveAudioRecordCallback = Future<String> Function(XFile file, bool private);
 
-typedef UploadFileCallback = Future<UploadTask?> Function(String path, FileType type,
-    {bool private});
+typedef UploadFileCallback = Future<UploadTask?> Function(
+  XFile file,
+  String? path,
+  FileType type, {
+  bool private,
+});
+
 typedef GetFileCallback = Future<FileModel> Function(String path);
 
 class JSONSchemaUI extends StatelessWidget {
