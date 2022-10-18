@@ -6,6 +6,146 @@ class Schemas {
       "description": "A simple form example.",
       "type": "object",
       "properties": {
+        "newInput7": {
+          "enum": [
+            "Winter",
+            "Spring",
+            "Summer",
+            "Autumn"
+          ],
+          "title": "New Input 7",
+          "type": "string"
+        },
+        "newInput5": {
+          "enum": [
+            "One",
+            "Two",
+            "Three"
+          ],
+          "title": "New Input 5",
+          "type": "string"
+        },
+        "newInput6": {
+          "title": "New Input 6",
+          "type": "string"
+        },
+        "newInput8": {
+          "title": "New Input 8",
+          "type": "number"
+        }
+      },
+      "dependencies": {
+        "newInput7": {
+          "oneOf": [
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Winter"
+                  ]
+                },
+                "newInput1": {
+                  "title": "New Input 1",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput1"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Spring"
+                  ]
+                },
+                "newInput2": {
+                  "title": "New Input 2",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "newInput2"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Summer"
+                  ]
+                },
+                "newInput3": {
+                  "format": "date",
+                  "title": "New Input 3",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput3"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Autumn"
+                  ]
+                },
+                "newInput4": {
+                  "format": "date-time",
+                  "title": "New Input 4",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput4"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "newInput7",
+        "newInput5",
+        "newInput6",
+        "newInput8"
+      ]
+    },
+
+    "ui": {
+      "newInput7": {
+        "ui:widget": "radio",
+        "ui:column": ""
+      },
+      "newInput6": {
+        "ui:widget": "textarea"
+      },
+      "ui:order": [
+        "newInput7",
+        "newInput1",
+        "newInput2",
+        "newInput3",
+        "newInput4",
+        "newInput5",
+        "newInput6",
+        "newInput8"
+      ]
+    },
+
+    "formData": {
+      "1": "test"
+    }
+  };
+
+  static const Map<String, dynamic> test1 = {
+    "label": "Simple",
+    "schema": {
+      "title": "A registration form",
+      "description": "A simple form example.",
+      "type": "object",
+      "properties": {
         "fixedItemsList": {
           "type": "array",
           "title": "A list of fixed items",
