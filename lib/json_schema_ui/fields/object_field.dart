@@ -38,24 +38,27 @@ class JSONSchemaUIField extends StatelessWidget {
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (path.isLastObject() || path.isLastArray())
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          // if (path.isLastObject() || path.isLastArray())
           ObjectHeader(title: title, description: description),
-        // TODO: Find out if there are any difference between for loop and listview in terms of optimization
+          // TODO: Find out if there are any difference between for loop and listview in terms of optimization
 
-        for (String field in fields)
-        ObjectBody(path: path, uiSchema: ui, schema: schema, field: field, disabled: disabled),
+          for (dynamic field in fields)
+            Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: ObjectBody(
+                path: path,
+                uiSchema: ui,
+                schema: schema,
+                field: field,
+                disabled: disabled,
+              ),
+            ),
 
-        if (path.isLastArray()) ArrayPanel(path),
-      ].map((e) => Padding(
-          padding: const EdgeInsets.all(3),
-          child: e,
-        ),
-      )
-          .toList(),
-    );
+          if (path.isLastArray()) ArrayPanel(path),
+        ]);
   }
 }
 
@@ -76,8 +79,8 @@ class ObjectHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != null) Text(title!, style: Theme.of(context).textTheme.headlineMedium),
-          if (description != null) Text(description!, style: Theme.of(context).textTheme.headlineSmall),
+          if (title != null) Text(title!, style: const TextStyle(fontSize: 25)),
+          if (description != null) Text(description!, style: const TextStyle(fontSize: 21)),
           const Divider(height: 10),
         ],
       ),
@@ -89,7 +92,7 @@ class ObjectBody extends StatelessWidget {
   final Map<String, dynamic> schema;
   final Map<String, dynamic> uiSchema;
   final MapPath path;
-  final String field;
+  final dynamic field;
   final bool disabled;
 
   const ObjectBody({
@@ -109,11 +112,7 @@ class ObjectBody extends StatelessWidget {
     String schemaType = newSchema['type'] ?? 'not_defined';
     if (schemaType == 'object' || schemaType == 'array') {
       if (newSchema.containsKey('subtype') && newSchema['subtype'] == "card") {
-        return CardWidget(
-          schema: newSchema,
-          uiSchema: newUiSchema,
-          path: path
-        );
+        return CardWidget(schema: newSchema, uiSchema: newUiSchema, path: path);
       }
 
       // TODO: Add FixedItemsList handling

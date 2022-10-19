@@ -38,15 +38,18 @@ class _PasswordWidgetState extends State<PasswordWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
-        validator: MultiValidator([
-          RequiredValidator(errorText: "Required"),
-          MinLengthValidator(6, errorText: "Password must contain at least 6 characters"),
-          MaxLengthValidator(15, errorText: "Password cannot be more 15 characters"),
-          PatternValidator(
-            r'(?=.*?[#?!@$%^&*-])',
-            errorText: "Password must have at least one special character",
-          ),
-        ]),
+        validator: (val) {
+          MultiValidator([
+            MinLengthValidator(6, errorText: "Password must contain at least 6 characters"),
+            MaxLengthValidator(15, errorText: "Password cannot be more 15 characters"),
+            PatternValidator(
+              r'(?=.*?[#?!@$%^&*-])',
+              errorText: "Password must have at least one special character",
+            ),
+          ]);
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+          return null;
+        },
         obscureText: true,
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),

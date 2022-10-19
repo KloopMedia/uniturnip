@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uniturnip/json_schema_ui/models/file_model.dart';
 import 'package:uniturnip/json_schema_ui/models/ui_model.dart';
@@ -82,76 +84,99 @@ class _FileWidgetState extends State<FileWidget> {
 
   void _pickFile(FileType type) async {
     try {
-      final result = await FilePicker.platform.pickFiles(type: type);
-      var paths = result?.paths;
-      if (!mounted || paths == null || paths.isEmpty) return;
-
-      for (var path in paths) {
-        var uploadTask = await context.read<UIModel>().saveFile!(
-          path!,
-          type,
-          private: _private,
-        );
-
-        setState(() {
-          _uploadTask = uploadTask;
-        });
-
-        // When upload is finished get filename and firebase storage path
-        final snapshot = await uploadTask!.whenComplete(() {});
-        final name = snapshot.ref.name;
-        final storagePath = snapshot.ref.fullPath;
-
-        // Add file to preview list
-        final files = [..._files, FileModel(name: name, path: storagePath, type: type)];
-        final distinctFiles = _getDistinctFiles(files);
-        setState(() {
-          _files = distinctFiles;
-        });
-
-        // Make a copy of value and add new file entry
-        var formData = {...value, name: storagePath};
-        _encodeAndSave(formData);
+      final ImagePicker picker = ImagePicker();
+      XFile? file;
+      switch (type) {
+        case FileType.image:
+          file = await picker.pickImage(source: ImageSource.gallery);
+          break;
+        case FileType.video:
+          file = await picker.pickVideo(source: ImageSource.gallery);
+          break;
+        default:
+        // final result = await FilePicker.platform.pickFiles(type: type, withData: true);
       }
+      if (!mounted || file == null) return;
+
+      // for (var file in files) {
+      var uploadTask = await context.read<UIModel>().saveFile!(
+        file,
+        kIsWeb ? null : file.path,
+        type,
+        private: _private,
+      );
+
+      setState(() {
+        _uploadTask = uploadTask;
+      });
+
+      // When upload is finished get filename and firebase storage path
+      final snapshot = await uploadTask!.whenComplete(() {});
+      final name = snapshot.ref.name;
+      final storagePath = snapshot.ref.fullPath;
+
+      // Add file to preview list
+      final files = [..._files, FileModel(name: name, path: storagePath, type: type)];
+      final distinctFiles = _getDistinctFiles(files);
+      setState(() {
+        _files = distinctFiles;
+      });
+
+      // Make a copy of value and add new file entry
+      var formData = {...value, name: storagePath};
+      _encodeAndSave(formData);
+      // }
     } on PlatformException catch (e) {
-      print(e);
+      print('File upload Platform Exception $e');
     } catch (e) {
-      print(e);
+      print('File upload other error $e');
     }
   }
 
   void openFile(String path) async {
     try {
-      var file = await context.read<UIModel>().getFile!(path);
+      var file = context.read<UIModel>().getFile!(path);
       if (!mounted) return;
       Navigator.push(
-          context,
-          DialogRoute(
-            context: context,
-            builder: (_) {
-              return Center(
-                child: Dismissible(
-                  key: const Key("file-preview"),
-                  direction: DismissDirection.vertical,
-                  onDismissed: (_) {
-                    Navigator.of(context).pop();
+        context,
+        DialogRoute(
+          context: context,
+          builder: (_) {
+            return Center(
+              child: Dismissible(
+                key: const Key("file-preview"),
+                direction: DismissDirection.vertical,
+                onDismissed: (_) {
+                  Navigator.of(context).pop();
+                },
+                child: FutureBuilder(
+                  future: file,
+                  builder: (BuildContext context, AsyncSnapshot<FileModel> snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasData) {
+                      final file = snapshot.data!;
+                      final url = file.url;
+                      if (url == null) {
+                        return const Text('Error: Failed to load the file! No file url!');
+                      }
+                      if (file.type == FileType.image) {
+                        return ImageViewerWidget(url: url);
+                      } else if (file.type == FileType.video) {
+                        return VideoPlayerWidget(url: url);
+                      }
+                      return const Text(
+                          'Error: Failed to load the file! File type not supported for preview!');
+                    }
+                    return const Text('Error: Failed to load the file!');
                   },
-                  child: Builder(builder: (context) {
-                    final url = file.url;
-                    if (url == null) {
-                      return const SizedBox.shrink();
-                    }
-                    if (file.type == FileType.image) {
-                      return ImageViewerWidget(url: url);
-                    } else if (file.type == FileType.video) {
-                      return VideoPlayerWidget(url: url);
-                    }
-                    return const SizedBox.shrink();
-                  }),
                 ),
-              );
-            },
-          ));
+              ),
+            );
+          },
+        ),
+      );
     } catch (e) {
       print(e);
       rethrow;
@@ -215,24 +240,34 @@ class UploadProgress extends StatelessWidget {
 
     return StreamBuilder<TaskSnapshot>(
       stream: task!.snapshotEvents,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final snap = snapshot.data!;
-          final progress = snap.bytesTransferred / snap.totalBytes;
+      builder: (context, asyncSnapshot) {
+        TaskSnapshot? snapshot = asyncSnapshot.data;
+
+        if (asyncSnapshot.hasError) {
+          if (asyncSnapshot.error is FirebaseException &&
+              (asyncSnapshot.error as FirebaseException).code == 'canceled') {
+            return const Text('Upload canceled.');
+          } else {
+            print(asyncSnapshot.error);
+            return const Text('Something went wrong.');
+          }
+        } else if (snapshot != null) {
+          final progress = snapshot.bytesTransferred / snapshot.totalBytes;
           return Row(
             children: [
-              Text(
-                snap.ref.name,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
+              Flexible(
+                child: Text(
+                  snapshot.ref.name,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               Expanded(child: LinearProgressIndicator(value: progress)),
               Text('${progress.toInt() * 100}'),
             ],
           );
-        } else {
-          return const SizedBox.shrink();
         }
+        return const SizedBox.shrink();
       },
     );
   }
@@ -247,24 +282,23 @@ class FileSelectorButtonGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
+        ElevatedButton.icon(
           onPressed: () {
             onSelect(FileType.image);
           },
           icon: const Icon(Icons.image),
+          label: const Text('Image'),
         ),
-        IconButton(
+        const SizedBox(
+          width: 8,
+        ),
+        ElevatedButton.icon(
           onPressed: () {
             onSelect(FileType.video);
           },
           icon: const Icon(Icons.video_file),
+          label: const Text('Video'),
         ),
-        IconButton(
-          onPressed: () {
-            onSelect(FileType.any);
-          },
-          icon: const Icon(Icons.insert_drive_file),
-        )
       ],
     );
   }

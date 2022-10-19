@@ -32,9 +32,11 @@ class UIModel extends ChangeNotifier {
   UnmodifiableMapView<String, dynamic> get data => UnmodifiableMapView<String, dynamic>(_data);
 
   void modifyData(MapPath path, dynamic value) {
-    _data = Utils.modifyMapByPath(path, _data, value);
-    notifyListeners();
-    onUpdate!(path: path, data: data);
+    if (!disabled) {
+      _data = Utils.modifyMapByPath(path, _data, value);
+      notifyListeners();
+      onUpdate!(path: path, data: data);
+    }
   }
 
   void addArrayElement(MapPath path) {
@@ -44,7 +46,7 @@ class UIModel extends ChangeNotifier {
     } else {
       int arrayLength = array.length;
       MapPath newPath = path.add('leaf', arrayLength);
-      _data = Utils.modifyMapByPath(newPath, _data, null);
+      _data = Utils.modifyMapByPath(newPath, _data, '');
     }
     notifyListeners();
     onUpdate!(path: path, data: data);
@@ -99,7 +101,9 @@ class UIModel extends ChangeNotifier {
   List<String> get translationList => _translationList;
 
   void setData(List<Map<String, dynamic>> value) {
-    _dataValue = value;
+    if (!disabled) {
+      _dataValue = value;
+    }
   }
 
   void getSentenceAsList() {
@@ -117,9 +121,13 @@ class UIModel extends ChangeNotifier {
 
     _sentenceAsTextSpan = TextSpan(
         children: wordsAsTextSpan
-            .map((e) => TextSpan(
+            .map((e) =>
+            TextSpan(
                 text: e.text,
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headlineSmall,
                 // TextStyle(
                 //   fontSize: 20.0,
                 //   color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,

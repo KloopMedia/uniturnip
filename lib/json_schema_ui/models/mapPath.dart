@@ -53,6 +53,9 @@ class MapPath {
     return _steps.length;
   }
 
+  get last => _steps.last.pointer;
+
+  get first => _steps.first.pointer;
 }
 
 class PathStep {
