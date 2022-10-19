@@ -94,7 +94,17 @@ class _FileWidgetState extends State<FileWidget> {
           file = await picker.pickVideo(source: ImageSource.gallery);
           break;
         default:
-        // final result = await FilePicker.platform.pickFiles(type: type, withData: true);
+          final result = await FilePicker.platform.pickFiles(type: type, withData: true);
+          if (result != null && result.files.isNotEmpty) {
+            final fileBytes = result.files.first.bytes;
+            final name = result.files.first.name;
+            if (fileBytes != null) {
+              file = XFile.fromData(
+                fileBytes,
+                name: name,
+              );
+            }
+          }
       }
       if (!mounted || file == null) return;
 
@@ -165,9 +175,14 @@ class _FileWidgetState extends State<FileWidget> {
                         return ImageViewerWidget(url: url);
                       } else if (file.type == FileType.video) {
                         return VideoPlayerWidget(url: url);
+                      } else {
+                        // AnchorElement(href: url)
+                        //   ..setAttribute('download', file.name)
+                        //   ..click();
+                        return const Text(
+                          'Error: Failed to load the file! File type not supported for preview!',
+                        );
                       }
-                      return const Text(
-                          'Error: Failed to load the file! File type not supported for preview!');
                     }
                     return const Text('Error: Failed to load the file!');
                   },
@@ -253,19 +268,23 @@ class UploadProgress extends StatelessWidget {
           }
         } else if (snapshot != null) {
           final progress = snapshot.bytesTransferred / snapshot.totalBytes;
-          return Row(
-            children: [
-              Flexible(
-                child: Text(
-                  snapshot.ref.name,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
+          if (progress < 1) {
+            return Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    snapshot.ref.name,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              Expanded(child: LinearProgressIndicator(value: progress)),
-              Text('${progress.toInt() * 100}'),
-            ],
-          );
+                Expanded(child: LinearProgressIndicator(value: progress)),
+                Text('${progress.toInt() * 100}'),
+              ],
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         }
         return const SizedBox.shrink();
       },
@@ -298,6 +317,16 @@ class FileSelectorButtonGroup extends StatelessWidget {
           },
           icon: const Icon(Icons.video_file),
           label: const Text('Video'),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            onSelect(FileType.any);
+          },
+          icon: const Icon(Icons.file_present),
+          label: const Text('File'),
         ),
       ],
     );
