@@ -59,7 +59,10 @@ class _NumberWidgetState extends State<NumberWidget> {
             focusedBorder:
                 OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
           ),
-          validator: RequiredValidator(errorText: 'Required'),
+          validator: (val) {
+            if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+            return null;
+          },
         ),
       ]),
     );

@@ -33,9 +33,9 @@ class JSONSchemaUIField extends StatelessWidget {
     String? title = schema['title'];
     String? description = schema['description'];
 
-    if (fields.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    // if (fields.isEmpty) {
+    //   return const SizedBox.shrink();
+    // }
 
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,

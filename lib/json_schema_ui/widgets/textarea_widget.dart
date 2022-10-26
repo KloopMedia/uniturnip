@@ -13,11 +13,9 @@ class TextareaWidget extends StatefulWidget {
 
 class _TextareaWidgetState extends State<TextareaWidget> {
   late final TextEditingController textControl;
-  late final bool required;
 
   @override
   void initState() {
-    required = widget.widgetData.required;
     final dynamic value = widget.widgetData.value;
     final String text = value != null ? value.toString() : '';
     textControl = TextEditingController(text: text);
@@ -38,12 +36,10 @@ class _TextareaWidgetState extends State<TextareaWidget> {
     return WidgetUI(
       title: widget.widgetData.title,
       description: widget.widgetData.description,
-      required: required,
+      required: widget.widgetData.required,
       child: TextFormField(
         validator: (val) {
-          if (required && (val == null || val.isEmpty)) {
-            return 'Required';
-          }
+          if (widget.widgetData.required && (val == null || val.isEmpty)) return 'Required';
           return null;
         },
         style: Theme.of(context).textTheme.headlineSmall,
