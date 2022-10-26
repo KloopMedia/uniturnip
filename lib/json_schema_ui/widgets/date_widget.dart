@@ -53,6 +53,7 @@ class _DateWidgetState extends State<DateWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
         validator: (val) {
           if (val == null || val.isEmpty) return 'Please enter appropriate Date';
           return null;

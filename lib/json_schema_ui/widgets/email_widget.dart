@@ -38,6 +38,7 @@ class _EmailWidgetState extends State<EmailWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
         validator: MultiValidator([
           if (widget.widgetData.required) RequiredValidator(
             errorText: "Required",

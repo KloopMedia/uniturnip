@@ -38,6 +38,7 @@ class _PasswordWidgetState extends State<PasswordWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
         validator: MultiValidator([
           RequiredValidator(errorText: "Required"),
           MinLengthValidator(6, errorText: "Password must contain at least 6 characters"),

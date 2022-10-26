@@ -56,6 +56,7 @@ class _DateTimeWidgetState extends State<DateTimeWidget> {
       description: widget.widgetData.description,
       required: widget.widgetData.required,
       child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
         controller: textControl,
         onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
         enabled: !widget.widgetData.disabled,

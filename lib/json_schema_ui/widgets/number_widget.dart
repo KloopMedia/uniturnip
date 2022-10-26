@@ -42,6 +42,7 @@ class _NumberWidgetState extends State<NumberWidget> {
       required: widget.widgetData.required,
       child: Column(children: <Widget>[
         TextFormField(
+          style: Theme.of(context).textTheme.headlineSmall,
           controller: textControl,
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
