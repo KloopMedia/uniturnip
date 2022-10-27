@@ -93,6 +93,19 @@ class _FileWidgetState extends State<FileWidget> {
         case FileType.video:
           file = await picker.pickVideo(source: ImageSource.gallery);
           break;
+        case FileType.audio:
+          final result = await FilePicker.platform.pickFiles(type: type, withData: true);
+          if (result != null && result.files.isNotEmpty) {
+            final fileBytes = result.files.first.bytes;
+            final name = result.files.first.name;
+            if (fileBytes != null) {
+              file = XFile.fromData(
+                fileBytes,
+                name: name,
+              );
+            }
+          }
+          break;
         default:
           final result = await FilePicker.platform.pickFiles(type: type, withData: true);
           if (result != null && result.files.isNotEmpty) {
@@ -299,7 +312,7 @@ class FileSelectorButtonGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
       children: [
         ElevatedButton.icon(
           onPressed: () {
@@ -317,6 +330,16 @@ class FileSelectorButtonGroup extends StatelessWidget {
           },
           icon: const Icon(Icons.video_file),
           label: const Text('Video'),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            onSelect(FileType.audio);
+          },
+          icon: const Icon(Icons.audio_file),
+          label: const Text('File'),
         ),
         const SizedBox(
           width: 8,
