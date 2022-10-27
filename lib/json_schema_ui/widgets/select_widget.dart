@@ -40,7 +40,7 @@ class SelectWidget extends StatelessWidget {
       required: widgetData.required,
       child: DropdownButtonFormField<dynamic>(
         validator: (val) {
-          if (widgetData.required && val == null) return 'Required';
+          if (widgetData.required && widgetData.value == null) return 'Required';
           return null;
         },
         autofocus: widgetData.autofocus,

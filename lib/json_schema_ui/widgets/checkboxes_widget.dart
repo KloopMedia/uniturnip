@@ -40,12 +40,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
           if (widget.widgetData.required && values.isEmpty) return 'Required';
           return null;
         },
-        builder: (FormFieldState<bool> state) {
-          void onChangedHandler(bool? value) {
-            setState(() {
-              state.didChange(value);
-            });
-          }
+        builder: (state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,19 +52,14 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                   title: Text(items[index]),
                   value: values.contains(items[index]),
                   onChanged: (val) {
-                    onChangedHandler(val);
                     widget.widgetData.disabled ? null : _onChange(items[index], val!);
+                    state.didChange(val);
                   },
                 ),
-              state.isValid
-                  ? const SizedBox.shrink()
-                  : Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Text(
-                      state.errorText ?? "",
-                      style: TextStyle(color: Colors.red[700], fontSize: 12.0),
-                    ),
-                  ),
+              Text(
+                state.errorText ?? "",
+                style: TextStyle(color: Colors.red[700], fontSize: 12.0),
+              ),
             ],
           );
         },

@@ -48,6 +48,7 @@ class _DateTimeWidgetState extends State<DateTimeWidget> {
       if (pickedDate != null && pickedTime != null) {
         final pickedDateTime = parseDateTime(pickedDate, pickedTime);
         widget.widgetData.onChange(widget.widgetData.path, pickedDateTime);
+        textControl.text = pickedDateTime;
       }
     }
 
