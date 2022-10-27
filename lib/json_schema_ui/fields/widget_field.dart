@@ -56,6 +56,8 @@ class WidgetField extends StatelessWidget {
         return FileWidget(widgetData: widgetData);
       case 'number':
         return NumberWidget(widgetData: widgetData);
+      case 'integer':
+        return NumberWidget(widgetData: widgetData);
 // case 'range':
 //   return RangeWidget(widgetData: widgetData);
       case 'files':
