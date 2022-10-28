@@ -339,7 +339,7 @@ class FileSelectorButtonGroup extends StatelessWidget {
             onSelect(FileType.audio);
           },
           icon: const Icon(Icons.audio_file),
-          label: const Text('File'),
+          label: const Text('Audio'),
         ),
         const SizedBox(
           width: 8,
