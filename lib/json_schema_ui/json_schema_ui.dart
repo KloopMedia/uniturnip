@@ -102,6 +102,7 @@ class JSONSchemaUI extends StatelessWidget {
                               onSubmit!(data: context.read<UIModel>().data);
                             } else {
                               print('validation failed');
+                              _showFormSnackBar(context, 'Your form has empty fields. Please correct them and submit again.');
                             }
                           },
                     child: Text(
@@ -116,5 +117,25 @@ class JSONSchemaUI extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showFormSnackBar(BuildContext context, String content) {
+    final snackBar = SnackBar(
+      duration: const Duration(minutes: 3),
+      behavior: SnackBarBehavior.floating,
+      padding: const EdgeInsets.all(20.0),
+      margin: const EdgeInsets.all(30.0),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+      content: Text(content, style: Theme.of(context).textTheme.headlineMedium),
+      backgroundColor: (Colors.redAccent),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Colors.white,
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
