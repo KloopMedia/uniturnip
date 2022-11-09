@@ -35,6 +35,9 @@ class JSONSchemaDependency extends StatelessWidget {
     Map<String, dynamic> uiSchema,
     Map<String, dynamic> properties,
   ) {
+    if (properties.keys.isEmpty) {
+      return {};
+    }
     String field = properties.keys.first;
     if (uiSchema.containsKey(field)) {
       return {field: uiSchema[field]};

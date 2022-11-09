@@ -13,7 +13,7 @@ class LinkWidget extends StatelessWidget {
     final String title = widgetData.title;
     final String description = widgetData.description;
     final bool required = widgetData.required;
-    String link = widgetData.schema['default'];
+    String link = widgetData.schema['default'] ?? widgetData.value ?? '';
 
     return WidgetUI(
       title: title,
