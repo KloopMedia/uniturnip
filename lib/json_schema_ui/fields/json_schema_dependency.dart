@@ -38,12 +38,13 @@ class JSONSchemaDependency extends StatelessWidget {
     if (properties.keys.isEmpty) {
       return {};
     }
-    String field = properties.keys.first;
-    if (uiSchema.containsKey(field)) {
-      return {field: uiSchema[field]};
-    } else {
-      return {};
+    Map<String, dynamic> newUiSchema = {};
+    for (var field in properties.keys) {
+      if (uiSchema.containsKey(field)) {
+        newUiSchema[field] = uiSchema[field];
+      }
     }
+    return newUiSchema;
   }
 
   @override
@@ -58,9 +59,9 @@ class JSONSchemaDependency extends StatelessWidget {
         if (options.contains(data)) {
           Map<String, dynamic> properties = {...dependency['properties']};
           final newSchema = _createSchema(dependency, properties);
-          final newUiSchema = _createUiSchema(uiSchema, properties);
+          // final newUiSchema = _createUiSchema(uiSchema, properties);
           var newPath = path.removeLast();
-          return JSONSchemaUIField(schema: newSchema, ui: newUiSchema, path: newPath);
+          return JSONSchemaUIField(schema: newSchema, ui: uiSchema, path: newPath);
         }
       }
       // If desired dependency is not found return empty widget.
