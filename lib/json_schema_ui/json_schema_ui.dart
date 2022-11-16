@@ -27,6 +27,8 @@ typedef UploadFileCallback = Future<UploadTask?> Function(
 
 typedef GetFileCallback = Future<FileModel> Function(String path);
 
+typedef ValidationWarningCallback = void Function();
+
 class JSONSchemaUI extends StatelessWidget {
   final Map<String, dynamic> schema;
   final Map<String, dynamic> ui;
@@ -38,6 +40,7 @@ class JSONSchemaUI extends StatelessWidget {
   final GetFileCallback? getFile;
   final UIModel _formController;
   final bool hideSubmitButton;
+  final ValidationWarningCallback? onValidationFailed;
 
   JSONSchemaUI({
     Key? key,
@@ -51,6 +54,7 @@ class JSONSchemaUI extends StatelessWidget {
     this.hideSubmitButton = false,
     UIModel? formController,
     this.getFile,
+    this.onValidationFailed,
   })  : _formController = formController ??
             UIModel(
               data: data,
@@ -102,7 +106,7 @@ class JSONSchemaUI extends StatelessWidget {
                               onSubmit!(data: context.read<UIModel>().data);
                             } else {
                               print('validation failed');
-                              _showFormSnackBar(context, 'Your form has empty fields. Please correct them and submit again.');
+                              onValidationFailed!();
                             }
                           },
                     child: Text(
@@ -117,25 +121,5 @@ class JSONSchemaUI extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showFormSnackBar(BuildContext context, String content) {
-    final snackBar = SnackBar(
-      duration: const Duration(minutes: 3),
-      behavior: SnackBarBehavior.floating,
-      padding: const EdgeInsets.all(20.0),
-      margin: const EdgeInsets.all(30.0),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-      content: Text(content, style: Theme.of(context).textTheme.headlineMedium),
-      backgroundColor: (Colors.redAccent),
-      action: SnackBarAction(
-        label: 'OK',
-        textColor: Colors.white,
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
