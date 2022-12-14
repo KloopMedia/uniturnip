@@ -61,7 +61,7 @@ class ReaderWidget extends StatelessWidget {
                 child: ListTile(
                   title: Text(
                     "$clickedWord: $translation",
-                    style: const TextStyle(fontSize: 20.0),
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   trailing: IconButton(
                       icon: const Icon(Icons.close),
@@ -81,7 +81,7 @@ class ReaderWidget extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       return Text(
                           "${clickedWordList[index]}: ${translationList[index]}",
-                          style: const TextStyle(fontSize: 20));
+                          style: Theme.of(context).textTheme.headlineLarge);
                     }),
               )
       ],

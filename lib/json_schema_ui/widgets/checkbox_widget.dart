@@ -36,7 +36,7 @@ class CheckboxWidget extends StatelessWidget {
                     widgetData.disabled ? null : _onChange(val);
                     state.didChange(val);
                   },
-                  title: Text(widgetData.title),
+                  title: Text(widgetData.title, style: Theme.of(context).textTheme.headlineSmall,),
                 ),
                 Text(
                   state.errorText ?? "",

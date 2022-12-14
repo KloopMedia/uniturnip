@@ -22,7 +22,7 @@ class LinkWidget extends StatelessWidget {
       child: InkWell(
         child: Text(
           link,
-          style: const TextStyle(color: Colors.blue, fontSize: 21),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.blue),
         ),
         onTap: () => launchUrl(Uri.parse(link)),
       ),

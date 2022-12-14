@@ -49,7 +49,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                   activeColor: Colors.black,
                   controlAffinity: ListTileControlAffinity.leading,
                   autofocus: widget.widgetData.autofocus,
-                  title: Text(items[index]),
+                  title: Text(items[index], style: Theme.of(context).textTheme.headlineSmall,),
                   value: values.contains(items[index]),
                   onChanged: (val) {
                     widget.widgetData.disabled ? null : _onChange(items[index], val!);
@@ -58,7 +58,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                 ),
               Text(
                 state.errorText ?? "",
-                style: TextStyle(color: Colors.red[700], fontSize: 12.0),
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.red[700]),
               ),
             ],
           );

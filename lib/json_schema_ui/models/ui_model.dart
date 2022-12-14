@@ -124,10 +124,7 @@ class UIModel extends ChangeNotifier {
             .map((e) =>
             TextSpan(
                 text: e.text,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
                 // TextStyle(
                 //   fontSize: 20.0,
                 //   color: (_clickedWord == e.text) ? Colors.greenAccent : Colors.black,

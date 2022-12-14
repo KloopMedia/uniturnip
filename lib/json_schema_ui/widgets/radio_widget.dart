@@ -58,7 +58,7 @@ class RadioWidget extends StatelessWidget {
                   activeColor: Colors.black,
                   title: Text(
                     _getName(items, names, index),
-                    style: const TextStyle(fontFamily: 'Open-Sans', fontWeight: FontWeight.w400, fontSize: 18),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   value: items[index],
                   groupValue: widgetData.value,
