@@ -110,7 +110,7 @@ class JSONSchemaUI extends StatelessWidget {
                             }
                           },
                     child: Text(
-                      "Submit",
+                      "Отправить/Жөнөтүү/Submit",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
