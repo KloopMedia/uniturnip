@@ -3,44 +3,69 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
 
-class TextWidget extends StatelessWidget {
-  TextWidget({Key? key, required this.widgetData}) : super(key: key);
-
+class TextWidget extends StatefulWidget {
   final WidgetData widgetData;
-  final TextEditingController textControl = TextEditingController();
-  
+
+  const TextWidget({Key? key, required this.widgetData}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    String title = widgetData.schema['title'] ?? '';
-    String description = widgetData.schema['description'] ?? '';
-    textControl.text = widgetData.value.toString();
+  State<TextWidget> createState() => _TextWidgetState();
+}
+
+class _TextWidgetState extends State<TextWidget> {
+  late final TextEditingController textControl;
+
+  @override
+  void initState() {
+    final dynamic value = widget.widgetData.value;
+    final String defaultValue = widget.widgetData.schema['default'] ?? '';
+    final String text = value != null ? value.toString() : '';
+    textControl = TextEditingController(text: value != null ? text : defaultValue);
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
+    super.initState();
+  }
 
-    if (widgetData.schema.containsKey('examples')) {
-      List<String> _options = widgetData.schema['examples'];
+  @override
+  void dispose() {
+    textControl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.widgetData.schema.containsKey('examples')) {
+      List<String> _options = widget.widgetData.schema['examples'];
 
       return WidgetUI(
-        title: title,
-        description: description,
+        title: widget.widgetData.title,
+        description: widget.widgetData.description,
+        required: widget.widgetData.required,
         child: Autocomplete<String>(
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode, VoidCallback onFieldSubmitted) {
+          fieldViewBuilder: (
+            BuildContext context,
+            TextEditingController textEditingController,
+            FocusNode focusNode,
+            VoidCallback onFieldSubmitted,
+          ) {
             return TextFormField(
-                  validator: RequiredValidator(
-                      errorText: 'Please enter a text',
-                  ),
-                  controller: textEditingController,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
-                  focusNode: focusNode,
-                  onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
-                  onFieldSubmitted: (String value) {
-                    onFieldSubmitted();
-                    print('You just typed a new entry  $value');
-                  },
+              style: Theme.of(context).textTheme.headlineSmall,
+              validator: (val) {
+                if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+                return null;
+              },
+              controller: textEditingController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+              ),
+              focusNode: focusNode,
+              onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
+              onFieldSubmitted: (String value) {
+                onFieldSubmitted();
+              },
             );
           },
           optionsBuilder: (TextEditingValue textEditingValue) {
@@ -53,25 +78,32 @@ class TextWidget extends StatelessWidget {
             });
           },
           onSelected: (String selection) {
-            widgetData.onChange(context, widgetData.path, selection);
+            widget.widgetData.onChange(widget.widgetData.path, selection);
           },
         ),
       );
     }
 
     return WidgetUI(
-      title: title,
-      description: description,
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
+      required: widget.widgetData.required,
       child: TextFormField(
-        validator: RequiredValidator(
-          errorText: 'Please enter a text',
-        ),
+        style: Theme.of(context).textTheme.headlineSmall,
+        validator: (val) {
+          if ((val == null || val.isEmpty) && widget.widgetData.required) return 'Required';
+          return null;
+        },
         controller: textControl,
-        onChanged: (val) => widgetData.onChange(context, widgetData.path, val),
-        enabled: !widgetData.disabled,
-        autofocus: widgetData.autofocus,
-        readOnly: widgetData.readonly,
-        decoration: const InputDecoration(border: OutlineInputBorder()),
+        onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
+        enabled: !widget.widgetData.disabled,
+        autofocus: widget.widgetData.autofocus,
+        readOnly: widget.widgetData.readonly,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+        ),
       ),
     );
   }

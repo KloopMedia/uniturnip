@@ -1,49 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import '../../../../json_schema_ui/models/widget_data.dart';
-import 'widget_ui.dart';
+import 'package:uniturnip/json_schema_ui/models/widget_data.dart';
+import 'package:uniturnip/json_schema_ui/widgets/widget_ui.dart';
 
 class EmailWidget extends StatefulWidget {
-  EmailWidget({Key? key, required this.widgetData}) : super(key: key);
-
   final WidgetData widgetData;
+
+  const EmailWidget({Key? key, required this.widgetData}) : super(key: key);
 
   @override
   State<EmailWidget> createState() => _EmailWidgetState();
 }
 
 class _EmailWidgetState extends State<EmailWidget> {
-  final TextEditingController textControl = TextEditingController();
+  late final TextEditingController textControl;
 
   @override
-  Widget build(BuildContext context) {
-    String title = widget.widgetData.schema['title'] ?? '';
-    String description = widget.widgetData.schema['description'] ?? '';
-    textControl.text = widget.widgetData.value ?? '';
+  void initState() {
+    textControl = TextEditingController(text: widget.widgetData.value ?? '');
     textControl.selection = TextSelection.fromPosition(
       TextPosition(offset: textControl.text.length),
     );
 
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textControl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return WidgetUI(
-      title: title,
-      description: description,
-        child: TextFormField(
-              validator: MultiValidator([
-                RequiredValidator(errorText: "Required"),
-                EmailValidator(errorText: "Please enter a valid email address"),
-              ]),
-              controller: textControl,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (val) => widget.widgetData.onChange(context, widget.widgetData.path, val),
-              enabled: !widget.widgetData.disabled,
-              autofocus: widget.widgetData.autofocus,
-              readOnly: widget.widgetData.readonly,
-              autofillHints: const [AutofillHints.email],
-            ),
+      title: widget.widgetData.title,
+      description: widget.widgetData.description,
+      required: widget.widgetData.required,
+      child: TextFormField(
+        style: Theme.of(context).textTheme.headlineSmall,
+        validator: MultiValidator([
+          if (widget.widgetData.required) RequiredValidator(
+            errorText: "Required",
+          ),
+          EmailValidator(
+            errorText: "Please enter a valid email address",
+          ),
+        ]),
+        controller: textControl,
+        decoration: const InputDecoration(
+          hintText: 'Email',
+          border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.black45)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2.0, color: Colors.white70)),
+        ),
+        keyboardType: TextInputType.emailAddress,
+        onChanged: (val) => widget.widgetData.onChange(widget.widgetData.path, val),
+        enabled: !widget.widgetData.disabled,
+        autofocus: widget.widgetData.autofocus,
+        readOnly: widget.widgetData.readonly,
+        autofillHints: const [AutofillHints.email],
+      ),
     );
   }
 }

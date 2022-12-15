@@ -1,5 +1,443 @@
 class Schemas {
+  static const Map<String, dynamic> arrayTest = {
+    "label": "Simple",
+    "schema": {
+      "type": "object",
+      "title": "Онлайн жолугушууга жазылуу / Запись на онлайн прием",
+      "properties": {
+        "instruction_link": {
+          "title": "Эгер сизге форманы толтурууда жардам керек болсо, анда бул шилтемени басыңыз: / Если вам нужна помощь с заполнением формы, то нажмите на эту ссылку:",
+          "type": "string",
+          "default": "https://taplink.cc/koldonmo"
+        },
+        "name": {
+          "title": "Толук аты жөнүңүз / ФИО",
+          "type": "string"
+        },
+        "actual_address": {
+          "title": " Жашаган дарегиңиз / Адрес проживания",
+          "type": "string"
+        },
+        "nationality": {
+          "title": "Улутуңуз / Национальность",
+          "type": "string"
+        },
+        "age": {
+          "title": "Жашыңыз / Ваш возраст",
+          "type": "integer"
+        },
+        "marital_status": {
+          "enum": [
+            "Женат_Замужем",
+            "Разведен_а",
+            "Не женат_Не замужем",
+            "Вдовец_Вдова"
+          ],
+          "title": "Үй-бүлөлүк абалыңыз / Ваше семейное положение",
+          "type": "string",
+          "enumNames": [
+            "Үй-бүлөлүү / Женат/Замужем",
+            "Ажырашкан / Разведен(а)",
+            "Бойдок / Не женат/Не замужем",
+            "Жесир / Вдовец/Вдова"
+          ]
+        },
+        "employed": {
+          "enum": [
+            "Постоянная работа",
+            "Непостоянная работа",
+            "Неполная занятость",
+            "Безработный_ая"
+          ],
+          "title": "Сиздин иш абалыңыз (жумушуңуз) / Статус вашей занятости (работа)",
+          "type": "string",
+          "enumNames": [
+            "Туруктуу жумуш / Постоянная работа",
+            "Убактылуу жумуш / Непостоянная работа",
+            "Жарым күндүк жумуш / Неполная занятость",
+            " Жумушсуз / Безработный(ая)"
+          ]
+        },
+        "salary": {
+          "enum": [
+            "0 - 5000 сомов в месяц",
+            "5000 - 10 000 сомов в месяц",
+            "10 000 - 20 000 сомов в месяц",
+            "20 000 - 30 000 сомов в месяц",
+            "больше сомов 30 000 в месяц"
+          ],
+          "title": "Кирешеңиз / Ваш заработок составляет",
+          "type": "string",
+          "enumNames": [
+            "айына 0 - 5000 сом / 0 - 5000 сомов в месяц",
+            "айына 5000 - 10 000 сом / 5000 - 10 000 сомов в месяц",
+            "айына 10 000 - 20 000 сом / 10 000 - 20 000 сомов в месяц",
+            "айына 20 000 - 30 000 сом / 20 000 - 30 000 сомов в месяц",
+            "айына 30 000 сомдон жогору / больше сомов 30 000 в месяц"
+          ]
+        },
+        "benefits_or_pension": {
+          "enum": [
+            "Да",
+            "Нет"
+          ],
+          "title": "Сиз же сиздин үй-бүлөңүздүн мүчөсү мамлекеттен социалдык жөлөкпул/пенсия алабы? / Получаете ли вы или член вашей семьи соц пособия/пенсии от государства?",
+          "type": "string",
+          "enumNames": [
+            "Ооба / Да",
+            "Жок / Нет"
+          ]
+        },
+        "phone_number": {
+          "title": "Телефон номериңиз / Номер телефона",
+          "type": "integer"
+        },
+        "whatsapp_number": {
+          "title": "WhatsApp номериңиз / WhatsApp номер",
+          "type": "integer"
+        },
+        "region": {
+          "enum": [
+            "chuy_region",
+            "naryn_region",
+            "osh_region",
+            "talas_region",
+            "issyk-kul_region",
+            "jalal-abad_region",
+            "batken_region",
+            "bishkek_city",
+            "osh_city"
+          ],
+          "title": "Облусуңузду тандаңыз / Выберите свою область",
+          "type": "string",
+          "enumNames": [
+            "Чуй облусу / Чуйская область",
+            "Нарын облусу / Нарынская область",
+            "Ош облусу / Ошская область",
+            "Талас облусу / Таласская область",
+            "Ысык-Көл облусу / Иссык-Кульская область",
+            "Жалал-Абад облусу / Джалал-Абадская область",
+            "Баткен облусу / Баткенская область",
+            "Бишкек шаары / город Бишкек",
+            "Ош шаары / город Ош"
+          ]
+        },
+        "description_of_problem": {
+          "title": "Көйгөйүңүздү мүнөздөп бериңиз / Опишите свою проблему",
+          "type": "string"
+        },
+        "file": {
+          "title": "Тиешелүү файлдарды, сүрөттөрдү, видеолорду, эгер бар болсо, тиркеңиз / Прикрепите нужные файлы, фотографии, видео, если они есть",
+          "type": "string"
+        },
+        "meeting_with_whom": {
+          "enum": [
+            "ombudsman",
+            "deputy_of_ombudsman_2",
+          ],
+          "title": "Жолугушууга кимге жазылууну тандаңыз: / Выберите к кому вы хотите записаться на прием:",
+          "type": "string",
+          "enumNames": [
+            "Абдрахматова Атыр Болотбековна (Акыйкатчы / Омбудсмен)",
+            "Колопов Альберт Сексенбаевич (Акыйкатчынын орун басары / Заместитель Омбудсмена)",
+            "Азарбеков Аскат Нарынбекович (Акыйкатчы аппаратынын жетекчиси / Руководитель аппарата Омбудсмена)"
+          ],
+          "description": "Кимге жазылууну тандаган соң, 10 секунд күтө туруңуз, алдыда даталар пайда болот. Жолугушуу күнүн сөзсүз тандооңуз кажет. / После того, как вы выбрали к кому записаться, подождите 10 секунд. Внизу появятся даты, вам нужно обязательно выбрать день приема"
+        },
+        "date": {
+          "enum": [
+            "2022-08-05",
+            "2022-08-12",
+            "2022-08-19",
+            "2022-08-26",
+            "2022-09-02"
+          ],
+          "title": "Онлайн жолугушуунун датасын тандаңыз. Онлайн жолугушуулар жума күндөрү гана өткөрүлөт. / Выберите дату. Онлайн приемы проходят только по пятницам",
+          "type": "string",
+          "enumNames": [
+            "05.08.2022",
+            "12.08.2022",
+            "19.08.2022",
+            "26.08.2022",
+            "02.09.2022"
+          ],
+          "description": "Жолугушуунун күнүн тандаган соң 10 секунд күтө туруңуз. Алдыда сааттар пайда болгон соң жолугушуунун убактысын сөзсүз тандооңуз кажет. / После выборы даты приема, подождите 10 секунд. Внизу появятся часы, вам нужно обязательно выбрать время"
+        },
+        "time": {
+          "enum": [
+            "t_10_00",
+            "t_10_30",
+            "t_11_00",
+            "t_11_30",
+            "t_12_00",
+            "t_12_30",
+            "t_14_00",
+            "t_14_30",
+            "t_15_00",
+            "t_15_30",
+            "t_16_00",
+            "t_16_30"
+          ],
+          "title": "Убакытты тандаңыз / Выберите время",
+          "type": "string",
+          "enumNames": [
+            "10:00",
+            "10:30",
+            "11:00",
+            "11:30",
+            "12:00",
+            "12:30",
+            "14:00",
+            "14:30",
+            "15:00",
+            "15:30",
+            "16:00",
+            "16:30"
+          ]
+        },
+        "names_of_zoom_participants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "Онлайн жолугушууга сизден башка да кишилердин катышуусун кааласаңыз, алардын аты-жөнүн жазууңуз зарыл. Ал үчүн алдыдагы көк түстүү «+» баскычын басыңыз. / Если вы хотите, чтобы на онлайн приеме вместе с вами участвовали другие люди, вам необходимо вписать их ФИО.  Для этого нажмите на синюю кнопку «+» ниже.",
+          "title": "Жолугушуунун катышуучулары / Участники встречи"
+        },
+        "comments": {
+          "title": "Кошумча комментарийлериңиз болсо бул жерге жазыңыз / Если у вас есть какие-либо комментарии, напишите их здесь",
+          "type": "string"
+        },
+        "note": {
+          "title": "Жолугушууга каттооңуздун ырасталуусун күтүп турууңуз кажет. Жооп невыполненные бөлүмүндө пайда болот. / Вам нужно подождать подтверждения записи на прием. Ответ появится в разделе невыполненные.",
+          "type": "object"
+        }
+      },
+      "dependencies": {},
+      "required": [
+        "name",
+        "actual_address",
+        "nationality",
+        "age",
+        "marital_status",
+        "employed",
+        "salary",
+        "benefits_or_pension",
+        "phone_number",
+        "whatsapp_number",
+        "region",
+        "description_of_problem",
+        "meeting_with_whom",
+        "date",
+        "time"
+      ],
+      "description": "Суроолор пайда болсо 0999700001 номерине кайрылыңыз / Если возникли вопросы, обращайтесь по номеру 0999700001"
+    },
+    "ui": {
+      "instruction_link": {
+        "ui:widget": "customlink"
+      },
+      "marital_status": {
+        "ui:widget": "radio"
+      },
+      "employed": {
+        "ui:widget": "radio"
+      },
+      "salary": {
+        "ui:widget": "radio"
+      },
+      "benefits_or_pension": {
+        "ui:widget": "radio"
+      },
+      "region": {
+        "ui:widget": "radio"
+      },
+      "description_of_problem": {
+        "ui:widget": "textarea"
+      },
+      "file": {
+        "ui:widget": "customfile",
+        "ui:options": {
+          "private": false,
+          "multiple": true
+        }
+      },
+      "meeting_with_whom": {
+        "ui:widget": "radio"
+      },
+      "date": {
+        "ui:widget": "radio"
+      },
+      "time": {
+        "ui:widget": "radio"
+      },
+      "ui:order": [
+        "instruction_link",
+        "name",
+        "actual_address",
+        "nationality",
+        "age",
+        "marital_status",
+        "employed",
+        "salary",
+        "benefits_or_pension",
+        "phone_number",
+        "whatsapp_number",
+        "region",
+        "description_of_problem",
+        "file",
+        "meeting_with_whom",
+        "date",
+        "time",
+        "names_of_zoom_participants",
+        "comments",
+        "note"
+      ]
+    },
+    "formData": {
+      "test": [1, 2]
+    }
+  };
   static const Map<String, dynamic> test = {
+    "label": "Simple",
+    "schema": {
+      "title": "A registration form",
+      "description": "A simple form example.",
+      "type": "object",
+      "properties": {
+        "newInput7": {
+          "enum": [
+            "Winter",
+            "Spring",
+            "Summer",
+            "Autumn"
+          ],
+          "title": "New Input 7",
+          "type": "string"
+        },
+        "newInput5": {
+          "enum": [
+            "One",
+            "Two",
+            "Three"
+          ],
+          "title": "New Input 5",
+          "type": "string"
+        },
+        "newInput6": {
+          "title": "New Input 6",
+          "type": "string"
+        },
+        "newInput8": {
+          "title": "New Input 8",
+          "type": "number"
+        }
+      },
+      "dependencies": {
+        "newInput7": {
+          "oneOf": [
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Winter"
+                  ]
+                },
+                "newInput1": {
+                  "title": "New Input 1",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput1"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Spring"
+                  ]
+                },
+                "newInput2": {
+                  "title": "New Input 2",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "newInput2"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Summer"
+                  ]
+                },
+                "newInput3": {
+                  "format": "date",
+                  "title": "New Input 3",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput3"
+              ]
+            },
+            {
+              "properties": {
+                "newInput7": {
+                  "enum": [
+                    "Autumn"
+                  ]
+                },
+                "newInput4": {
+                  "format": "date-time",
+                  "title": "New Input 4",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newInput4"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "newInput7",
+        "newInput5",
+        "newInput6",
+        "newInput8"
+      ]
+    },
+
+    "ui": {
+      "newInput7": {
+        "ui:widget": "radio",
+        "ui:column": ""
+      },
+      "newInput6": {
+        "ui:widget": "textarea"
+      },
+      "ui:order": [
+        "newInput7",
+        "newInput1",
+        "newInput2",
+        "newInput3",
+        "newInput4",
+        "newInput5",
+        "newInput6",
+        "newInput8"
+      ]
+    },
+
+    "formData": {
+      "1": "test"
+    }
+  };
+
+  static const Map<String, dynamic> test1 = {
     "label": "Simple",
     "schema": {
       "title": "A registration form",
@@ -12,147 +450,155 @@ class Schemas {
           "items": {
             "type": "object",
             "properties": {
-              "word": {
-                "default": "Some word",
-                "type": "string",
-                "readOnly": true
-              },
-              "translation": {
-                "default": "Какое-то слово",
-                "type": "string",
-                "readOnly": true
-              },
+              "word": {"default": "Some word", "type": "string", "readOnly": true},
+              "translation": {"default": "Какое-то слово", "type": "string", "readOnly": true},
               "count": {
                 "title": "Кол-во нажатий",
                 "default": 0,
                 "type": "integer",
                 "readOnly": true
               },
-              "active": {
-                "title": "Активен",
-                "type": "boolean"
-              }
+              "active": {"title": "Активен", "type": "boolean"}
             }
           }
         },
-        "card":{
+        "card": {
+          "subtype": "card",
           "type": "object",
+          "description": "Playground",
           "properties": {
-            "newInput1": {
-              "title":"New Input 1",
-              "type": "string"
-            },
-            "newInput2": {
-              "title":"New Input 2",
+            "q_1": {
+              "title": "Pancakes",
               "type": "object",
               "properties": {
-                "newInput1": {
-                  "title":"New Input 2.1",
+                "1_1": {
+                  "enum": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "title": "Pancakes are:",
+                  "type": "string",
+                  "enumNames": [
+                    "good ",
+                    "bad",
+                    "tasty"
+                  ]
+                },
+                "1_2": {
+                  "enum": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "title": "French toasts are:",
+                  "type": "string",
+                  "enumNames": [
+                    "good ",
+                    "bad",
+                    "tasty"
+                  ]
+                }
+              },
+              "dependencies": {},
+              "required": []
+            },
+            "q_2": {
+              "title": "Waffles",
+              "type": "object",
+              "properties": {
+                "2_1": {
+                  "enum": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "title": "waffles are",
+                  "type": "string",
+                  "enumNames": [
+                    "good",
+                    "bad",
+                    "tasty"
+                  ]
+                }
+              },
+              "dependencies": {},
+              "required": []
+            },
+            "q_3": {
+              "title": "Waffles",
+              "type": "object",
+              "properties": {
+                "3_1": {
+                  "title": "String field",
                   "type": "string"
                 },
-                "newInput2":{
-                  "enum":[
-                    "1",
-                    "2",
-                    "3"
-                  ],
-                  "enumNames": [
-                    'a',
-                    'b',
-                    'c'
-                  ],
-                  "title":"New Input 2.2",
-                  "type":"string"
-                }
-              }
-            },
-            "newInput3": {
-              "type": "object",
-              "title": "New Input 3",
-              "properties": {
-                "newInput1": {
+                "3_2": {
                   "type": "boolean",
-                  "title": "New Input 3.1"
+                  "title": "checkbox (default)",
+                  "description": "This is the checkbox-description"
                 },
-                "newInput2": {
+                "3_3": {
                   "type": "boolean",
-                  "title": "New Input 3.2"
+                  "title": "select box",
+                  "description": "This is the select-description"
                 }
-              }
-            },
-            "newInput4":{
-              "enum":[
-                "1",
-                "2",
-                "3"
-              ],
-              "enumNames": [
-                'a',
-                'b',
-                'c'
-              ],
-              "title":"New Input 4",
-              "type":"string"
+              },
+              "dependencies": {},
+              "required": []
             }
-          }
+          },
+          "dependencies": {},
+          "required": []
         }
       }
     },
     "ui": {
-      "fixedItemsList": {
-        "ui:widget": "reader"
-      },
+      "fixedItemsList": {"ui:widget": "reader"},
       "card": {
-        "ui:widget": "card",
-        "ui:order": ["newInput2", "newInput3", "newInput1", "newInput4"],
-        "newInput1": {
-          "ui:emptyValue": ""
-        },
-        "newInput2": {
-          "ui:order": ["newInput2", "newInput1"],
-          "newInput1": {
-            "ui:emptyValue": ""
-          },
-          "newInput2": {
+        "q_1": {
+          "1_1": {
             "ui:widget": "radio"
-          }
+          },
+          "1_2": {
+            "ui:widget": "radio"
+          },
+          "ui:order": [
+            "1_1",
+            "1_2"
+          ]
         },
-        "newInput3": {
-          "newInput2": {
+        "q_2": {
+          "2_1": {
+            "ui:widget": "radio"
+          },
+          "ui:order": [
+            "2_1"
+          ]
+        },
+        "q_3": {
+          "3_3": {
             "ui:widget": "select"
-          }
+          },
+          "ui:order": [
+            "3_1",
+            "3_2",
+            "3_3"
+          ]
         },
-        "newInput4": {
-          "ui:widget":"radio"
-        }
+        "ui:order": [
+          "q_1",
+          "q_2",
+          "q_3"
+        ]
       }
     },
     "formData": {
-      "fixedItemsList":  [
-        {
-          "word": "The",
-          "translation": "артикль",
-          "count": 0,
-          "active": true
-        },
-        {
-          "word": "first",
-          "translation": "первый",
-          "count": 0,
-          "active": true
-        },
-        {
-          "word": "simple",
-          "translation": "простой",
-          "count": 0,
-          "active": true
-        },
-        {
-          "word": "text",
-          "translation": "текст",
-          "count": 0,
-          "active": true
-        }
+      "fixedItemsList": [
+        {"word": "The", "translation": "артикль", "count": 0, "active": true},
+        {"word": "first", "translation": "первый", "count": 0, "active": true},
+        {"word": "simple", "translation": "простой", "count": 0, "active": true},
+        {"word": "text", "translation": "текст", "count": 0, "active": true}
       ]
     }
   };
@@ -165,13 +611,15 @@ class Schemas {
       "type": "object",
       "required": ["firstName", "lastName"],
       "properties": {
-        "firstName": {"type": "string", "title": "First name", "default": "Chuck"},
+        "firstName": {"type": "string", "title": "First name"},
         "lastName": {"type": "string", "title": "Last name"},
         "telephone": {"type": "string", "title": "Telephone", "minLength": 10}
       }
     },
     "ui": {
-      "firstName": {"ui:autofocus": true, "ui:emptyValue": "", "ui:autocomplete": "family-name"},
+      "firstName": {
+        "ui:widget": "customfile",
+      },
       "lastName": {"ui:emptyValue": "", "ui:autocomplete": "given-name"},
       "age": {
         "ui:widget": "updown",
@@ -186,7 +634,7 @@ class Schemas {
       }
     },
     "formData": {
-      "firstName": "Chuck",
+      "firstName": "https://flutter-sound.canardoux.xyz/web_example/assets/extract/05.mp3",
       "lastName": "Norris",
       "age": 75,
       "bio": "Roundhouse kicking asses since 1940",
@@ -435,8 +883,8 @@ class Schemas {
           "type": "object",
           "title": "String formats",
           "properties": {
-            "email": {"type": "string", "title":"email", "format": "email"},
-            "uri": {"type": "string", "title":"uri", "format": "uri"}
+            "email": {"type": "string", "title": "email", "format": "email"},
+            "uri": {"type": "string", "title": "uri", "format": "uri"}
           }
         },
         "boolean": {
@@ -1544,6 +1992,7 @@ class Schemas {
   };
 
   static List<Map<String, dynamic>> schemas = [
+    test,
     simple,
     nested,
     arrays,
